@@ -149,22 +149,32 @@ public class ItemController {
         return null;
 	}
 	
-	public Boolean acceptOffer(String itemId) {
-		try {
-			 String query = String.format("UPDATE ITEMS SET " +
-		                "name = '%s', " +
-		                "size = '%d', " +
-		                "price = '%d', " +
-		                "category = '%s', " +
-		                "WHERE id = '%s'",
-		                name, size, price, category, itemId);
-
-			Connect.getInstance().execute(query);
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	public void acceptOffer(String offerID) {
+		//Idea : 
+		//Terima OfferID, di accept terus update ke database
+		//Update Offer Status menjadi Offered. Dan update harga offer di item_offer_price
+		//Hapus offer nya di database
+	}
+	
+	
+	public void declineOffer(String offerID) {
+		//Idea:
+		//Hapus offerID, nanti kemungkinan besar dipindahin ke offerController
+	}
+	
+	public void approveItem(String itemID) {
+		//Idea:
+		//Status diubah menjadi approved. Agar bisa dijual nantinya
+	}
+	
+	public void declineItem(String itemID) {
+		//Idea:
+		//Status diubah menjadi decline. Agar bisa dijual nantinya
+	}
+	
+	public void viewAcceptedItem() {
+		//Idea:
+		//Ambil semua item yang statusnya approved?
 	}
 	
 }
