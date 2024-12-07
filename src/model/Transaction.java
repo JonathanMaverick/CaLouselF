@@ -1,35 +1,34 @@
 package model;
 
 public class Transaction {
-	private String TransactionID; 
-	private String UserID;
-	private String ItemID;
+	private String transactionID; 
+	private String userID;
+	private String itemID;
 	
 	public Transaction(String transactionID, String userID, String itemID) {
 		super();
-		TransactionID = transactionID;
-		UserID = userID;
-		ItemID = itemID;
+		this.transactionID = transactionID;
+		this.userID = userID;
+		this.itemID = itemID;
 	}
 	
 	public String getTransactionID() {
-		return TransactionID;
+		return transactionID;
 	}
 	public void setTransactionID(String transactionID) {
-		TransactionID = transactionID;
+		this.transactionID = transactionID;
 	}
 	public String getUserID() {
-		return UserID;
+		return userID;
 	}
 	public void setUserID(String userID) {
-		UserID = userID;
+		this.userID = userID;
 	}
 	public String getItemID() {
-		return ItemID;
+		return itemID;
 	}
 	public void setItemID(String itemID) {
-		ItemID = itemID;
+		this.itemID = itemID;
 	}
-	
 	
 }

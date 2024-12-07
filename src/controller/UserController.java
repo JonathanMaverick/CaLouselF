@@ -9,13 +9,13 @@ import model.User;
 
 public class UserController {
 	
-	public Vector<User> getUsers(){
+	private Vector<User> getUsers(){
 		Vector<User> userList = new Vector<>();
 		try {
 			String query = "SELECT * FROM users";
 			ResultSet rs = Connect.getInstance().execQuery(query);
 			while (rs.next()) {
-				String id = rs.getString("id");
+				String id = rs.getString("user_id");
 				String username = rs.getString("username");
 				String password = rs.getString("password");
 				String phoneNumber = rs.getString("phoneNumber");
@@ -62,7 +62,7 @@ public class UserController {
 	private boolean isUsernameUnique(String username) {
 		Vector<User> userList = getUsers();
 		 for (User user : userList) {
-            if (user.getUserName().equals(username)) {
+            if (user.getUsername().equals(username)) {
                 return false; 
             }
         }
