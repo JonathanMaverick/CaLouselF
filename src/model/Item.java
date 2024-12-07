@@ -11,6 +11,16 @@ public class Item {
 	private int wishlist;
 	private String offerStatus;
 	private int itemOfferPrice;
+	
+	public Item(String itemID, String name, int size, int price, String category) {
+		super();
+		this.itemID = itemID;
+		this.name = name;
+		this.size = size;
+		this.price = price;
+		this.category = category;
+	}
+	
 	public Item(String itemID, String name, int size, int price, String category, String status, int wishlist,
 			String offerStatus, int itemOfferPrice) {
 		super();

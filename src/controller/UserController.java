@@ -2,12 +2,21 @@ package controller;
 
 import java.sql.ResultSet;
 import java.util.Vector;
-import java.util.regex.Pattern;
 
+import utils.Response;
 import database.Connect;
 import model.User;
 
 public class UserController {
+
+	private static UserController instance;
+	
+    public static UserController getInstance() {
+        if (instance == null) {
+            instance = new UserController();
+        }
+        return instance;
+    }
 	
 	private Vector<User> getUsers(){
 		Vector<User> userList = new Vector<>();
@@ -31,32 +40,79 @@ public class UserController {
 		return userList;
 	}
 	
+	private String generateNewUserId(){
+	    String query = "SELECT MAX(user_id) AS max_id FROM users"; 
+	    try {
+	    	ResultSet rs = Connect.getInstance().execQuery(query);
+	        String maxID = "US000";
+	        if (rs.next() && rs.getString("max_id") != null) {
+	            maxID = rs.getString("max_id");
+	        }
+
+	        int numericPart = Integer.parseInt(maxID.substring(2));
+
+	        return String.format("US%03d", numericPart + 1);
+	    }catch (Exception e) {
+			e.printStackTrace();
+			return "Error user id";
+		}
+	}
 	
-	public Boolean login(String username, String password) {
+	private User getUser(String userId) {
+		try {
+			String query = String.format("SELECT * FROM users WHERE user_id = '%s' LIMIT 1", userId);
+			ResultSet rs = Connect.getInstance().execQuery(query);
+			while (rs.next()) {
+				String id = rs.getString("user_id");
+				String username = rs.getString("username");
+				String password = rs.getString("password");
+				String phoneNumber = rs.getString("phoneNumber");
+				String address = rs.getString("address");
+				String roles = rs.getString("roles");
+				User user = new User(id, username, password, phoneNumber, address, roles);
+				return user;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return null;
+	}
+	
+	
+	public Response<User> login(String username, String password) {
 		try {
 			String query = String.format("SELECT * FROM users WHERE username = '%s' AND password = '%s'", username,
 					password);
 			ResultSet rs = Connect.getInstance().execQuery(query);
-
+			
 			if (rs.next()) {
-				return true;
+				String id = rs.getString("user_id");
+				//Set logged user here
+				User user = getUser(id);
+				return new Response<>(true, "User logged in", user);
 			}
-			return false;
+			return new Response<>(false, "User not found", null);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
+			return new Response<>(false, "Error occured", null);
 		}
 	}
 	
-	public Boolean register(String username, String password, String phoneNumber, String address, String roles) {
-		try {
-			String query = String.format("INSERT INTO USERS VALUES (NULL, '%s', '%s', '%s', '%s')", username, password, phoneNumber, address, roles);
-			Connect.getInstance().execute(query);
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
+	public Response<User> register(String username, String password, String phoneNumber, String address, String roles) {
+		Response<User> validationResponse = checkAccountValidation(username, password, phoneNumber, address, roles);
+		if(validationResponse.success) {
+			try {
+				String userId = generateNewUserId();
+				String query = String.format("INSERT INTO USERS VALUES ('%s', '%s', '%s', '%s', '%s', '%s')", userId, username, password, phoneNumber, address, roles);
+				Connect.getInstance().execute(query);
+				return validationResponse;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return new Response<>(false, "An error occured", null);
+			}
 		}
+		return validationResponse;
 	}
 	
 	private boolean isUsernameUnique(String username) {
@@ -103,34 +159,33 @@ public class UserController {
         return true;
     }
 	
-	public String checkAccountValidation(String username, String password, String phoneNumber, String address, String roles) {
+	public Response<User> checkAccountValidation(String username, String password, String phoneNumber, String address, String roles) {
 		if(username.isEmpty()) {
-			return "Username not empty";
+			return new Response<>(false, "Username can't be empty", null);
 		}
 		else if (username.length() < 3) {
-			return "Username at least 3 character";
+			return 	new Response<>(false, "Username at least 3 character", null);
 		}
 		else if (!isUsernameUnique(username)) {
-			return "Username not unique";
+			return new Response<>(false, "Username not unique", null);
 		}
 		else if (password.isEmpty()) {
-			return "Password not empty";
+			return new Response<>(false, "Password can't be empty", null);
 		}
 		else if (password.length() < 8) {
-			return "Password at least 8 character";
+			return new Response<>(false, "Password at least 8 character", null);
 		}
-		else if (isPasswordValid(password)) {
-			return "Password valid";
+		else if (!isPasswordValid(password)) {
+			return new Response<>(false, "Password must include special characters (!, @, #, $, %, ^, &, *)", null);
 		}
 		else if(!isValidPhoneNumber(phoneNumber)) {
-			return "Phone number valid";
+			return new Response<>(false,"Phone number must at least contains a +62 and 10 numbers long ", null);
 		}
 		else if(address.isEmpty()) {
-			return "Address can't be empty";
+			return new Response<>(false, "Address can't be empty", null);
 		}
 		else {
-			register(username, password, phoneNumber, address, roles);
-			return "Account created";
+			return new Response<>(true, "User registered!", null);
 		}
 	}
 }

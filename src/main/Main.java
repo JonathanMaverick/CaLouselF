@@ -2,6 +2,7 @@ package main;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import view.LoginView;
 
 public class Main extends Application{
 	
@@ -12,8 +13,8 @@ public class Main extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
-//		AppView appView = new AppView(primaryStage);
-//		ViewController viewController = ViewController.getInstance();
+		LoginView loginView = new LoginView();
+		loginView.start(primaryStage);
 		
 	}
 }

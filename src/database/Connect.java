@@ -10,7 +10,7 @@ public class Connect {
 
 	private final String username = "root";
 	private final String password = "";
-	private final String database = "javafx-sesi9";
+	private final String database = "CaLouselF";
 	private final String host = "localhost:3306";
 	private final String connection = String.format("jdbc:mysql://%s/%s", host, database);
 

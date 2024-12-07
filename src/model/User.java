@@ -1,26 +1,26 @@
 package model;
 
 public class User {
-	private String userID;
+	private String userId;
 	private String username;
 	private String password;
 	private String phoneNumber;
 	private String address;
 	private String roles;
-	public User(String userID, String username, String password, String phoneNumber, String address, String roles) {
+	public User(String userId, String username, String password, String phoneNumber, String address, String roles) {
 		super();
-		this.userID = userID;
+		this.userId = userId;
 		this.username = username;
 		this.password = password;
 		this.phoneNumber = phoneNumber;
 		this.address = address;
 		this.roles = roles;
 	}
-	public String getUserID() {
-		return userID;
+	public String getUserId() {
+		return userId;
 	}
-	public void setUserID(String userID) {
-		this.userID = userID;
+	public void setUserID(String userId) {
+		this.userId = userId;
 	}
 	public String getUsername() {
 		return username;

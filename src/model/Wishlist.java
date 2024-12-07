@@ -1,39 +1,39 @@
 package model;
 
 public class Wishlist {
-	private String wishlistID;
-	private String itemID; 
-	private String userID;
+	private String wishlistId;
+	private String itemId; 
+	private String userId;
 	
-	public Wishlist(String wishlistID, String itemID, String userID) {
+	public Wishlist(String wishlistId, String itemId, String userId) {
 		super();
-		this.wishlistID = wishlistID;
-		this.itemID = itemID;
-		this.userID = userID;
+		this.wishlistId = wishlistId;
+		this.itemId = itemId;
+		this.userId = userId;
 	}
 
-	public String getWishlistID() {
-		return wishlistID;
+	public String getWishlistId() {
+		return wishlistId;
 	}
 
-	public void setWishlistID(String wishlistID) {
-		this.wishlistID = wishlistID;
+	public void setWishlistId(String wishlistId) {
+		this.wishlistId = wishlistId;
 	}
 
-	public String getItemID() {
-		return itemID;
+	public String getItemId() {
+		return itemId;
 	}
 
-	public void setItemID(String itemID) {
-		this.itemID = itemID;
+	public void setItemId(String itemId) {
+		this.itemId = itemId;
 	}
 
-	public String getUserID() {
-		return userID;
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setUserID(String userID) {
-		this.userID = userID;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 	
 	

@@ -1,34 +1,34 @@
 package model;
 
 public class Offer {
-	public String itemID;
-	public String offerID;
-	public String userID;
+	public String itemId;
+	public String offerId;
+	public String userId;
 	public int offerPrice;
-	public Offer(String itemID, String offerID, String userID, int offerPrice) {
+	public Offer(String itemId, String offerId, String userId, int offerPrice) {
 		super();
-		this.itemID = itemID;
-		this.offerID = offerID;
-		this.userID = userID;
+		this.itemId = itemId;
+		this.offerId = offerId;
+		this.userId = userId;
 		this.offerPrice = offerPrice;
 	}
-	public String getItemID() {
-		return itemID;
+	public String getitemId() {
+		return itemId;
 	}
-	public void setItemID(String itemID) {
-		this.itemID = itemID;
+	public void setitemId(String itemId) {
+		this.itemId = itemId;
 	}
-	public String getOfferID() {
-		return offerID;
+	public String getofferId() {
+		return offerId;
 	}
-	public void setOfferID(String offerID) {
-		this.offerID = offerID;
+	public void setofferId(String offerId) {
+		this.offerId = offerId;
 	}
-	public String getUserID() {
-		return userID;
+	public String getuserId() {
+		return userId;
 	}
-	public void setUserID(String userID) {
-		this.userID = userID;
+	public void setuserId(String userId) {
+		this.userId = userId;
 	}
 	public int getOfferPrice() {
 		return offerPrice;
