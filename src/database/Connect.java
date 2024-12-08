@@ -23,7 +23,7 @@ public class Connect {
 
 	public static Connect getInstance() {
 		if (db == null) {
-			return new Connect();
+			db = new Connect();
 		}
 		return db;
 	}
