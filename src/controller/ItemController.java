@@ -8,6 +8,15 @@ import model.Item;
 import utils.Response;
 
 public class ItemController {
+	
+	private static ItemController instance;
+	
+    public static ItemController getInstance() {
+        if (instance == null) {
+            instance = new ItemController();
+        }
+        return instance;
+    }
 
 	//viewItem
 	//Ambil semua item, tanpa peduli status

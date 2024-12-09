@@ -10,6 +10,15 @@ import utils.Response;
 
 public class OfferController {
 	
+	private static OfferController instance;
+	
+    public static OfferController getInstance() {
+        if (instance == null) {
+            instance = new OfferController();
+        }
+        return instance;
+    }
+	
 	private Offer getOffer(String offerId) {
         try {
         	String query = String.format("SELECT * FROM Offers WHERE offer_id LIKE '%s%'", offerId);
@@ -27,7 +36,7 @@ public class OfferController {
         return null;
 	}
 	
-	private String generateNewofferId(){
+	private String generateNewOfferId(){
 	    String query = "SELECT MAX(offer_id) AS max_id FROM offers"; 
 	    try {
 	    	ResultSet rs = Connect.getInstance().execQuery(query);
@@ -38,7 +47,7 @@ public class OfferController {
 
 	        int numericPart = Integer.parseInt(maxID.substring(2));
 
-	        return String.format("IT%03d", numericPart + 1);
+	        return String.format("OF%03d", numericPart + 1);
 	    }catch (Exception e) {
 			e.printStackTrace();
 			return "Error offer id";
@@ -67,13 +76,13 @@ public class OfferController {
 		Response<Offer> response = checkOfferValidation(itemId, userId, offerPrice);
 		if(response.success) {
 			try {
-				String offerId = generateNewofferId();
+				String offerId = generateNewOfferId();
 				String query = String.format("INSERT INTO OFFERS VALUES "
 						+ "('%s', '%s', '%s', '%d')",
 						offerId, itemId, userId, offerPrice);
 				Offer insertedOffer = new Offer(itemId, offerId, userId, offerPrice);
 				Connect.getInstance().execute(query);
-				return new Response<>(true, "Item's successfully inserted", insertedOffer);
+				return new Response<>(true, "Offer's successfully inserted", insertedOffer);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return new Response<>(false, "Offer's not inserted", null);

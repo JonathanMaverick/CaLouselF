@@ -1,10 +1,11 @@
-package view;
+package view.auth;
 
 import controller.UserController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
@@ -65,6 +66,9 @@ class RegisterView {
 
         Button registerButton = new Button("Register");
         grid.add(registerButton, 1, 5);
+        
+        Hyperlink loginLink = new Hyperlink("Login Here");
+        grid.add(loginLink, 1, 6);
 
         registerButton.setOnAction(e -> {
             String username = userNameField.getText();
@@ -87,6 +91,15 @@ class RegisterView {
             	Dialog errorDialog = new Dialog();
                 errorDialog.showErrorDialog(registerResponse.message);
             }
+        });
+        
+        loginLink.setOnAction(e -> {
+            LoginView loginView = new LoginView();
+            try {
+				loginView.start(primaryStage);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
         });
 
         Scene scene = new Scene(grid, 400, 300);

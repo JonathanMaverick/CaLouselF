@@ -5,7 +5,7 @@ public class Wishlist {
 	private String itemId; 
 	private String userId;
 	
-	public Wishlist(String wishlistId, String itemId, String userId) {
+	public Wishlist(String wishlistId, String userId, String itemId) {
 		super();
 		this.wishlistId = wishlistId;
 		this.itemId = itemId;

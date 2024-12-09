@@ -1,4 +1,4 @@
-package view;
+package view.auth;
 
 import controller.UserController;
 import javafx.application.Application;
@@ -14,6 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import utils.Dialog;
 import utils.Response;
+import view.AppView;
 
 public class LoginView extends Application{
 

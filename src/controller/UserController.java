@@ -3,6 +3,7 @@ package controller;
 import java.sql.ResultSet;
 import java.util.Vector;
 
+import utils.LoggedUser;
 import utils.Response;
 import database.Connect;
 import model.User;
@@ -18,6 +19,8 @@ public class UserController {
         return instance;
     }
 	
+    //getUsers
+    //Ambil semua user
 	private Vector<User> getUsers(){
 		Vector<User> userList = new Vector<>();
 		try {
@@ -40,6 +43,8 @@ public class UserController {
 		return userList;
 	}
 	
+	//generateNewUserId
+	//Ngebuat id baru untuk user baru
 	private String generateNewUserId(){
 	    String query = "SELECT MAX(user_id) AS max_id FROM users"; 
 	    try {
@@ -58,6 +63,8 @@ public class UserController {
 		}
 	}
 	
+	//getUser
+	//Mengambil user berdasarkan userId
 	private User getUser(String userId) {
 		try {
 			String query = String.format("SELECT * FROM users WHERE user_id = '%s' LIMIT 1", userId);
@@ -80,6 +87,8 @@ public class UserController {
 	}
 	
 	
+	//login
+	//login berdasarkan username dan password
 	public Response<User> login(String username, String password) {
 		try {
 			String query = String.format("SELECT * FROM users WHERE username = '%s' AND password = '%s'", username,
@@ -88,8 +97,8 @@ public class UserController {
 			
 			if (rs.next()) {
 				String id = rs.getString("user_id");
-				//Set logged user here
 				User user = getUser(id);
+				LoggedUser.getInstance().setLoggedUser(user);
 				return new Response<>(true, "User logged in", user);
 			}
 			return new Response<>(false, "User not found", null);
@@ -99,6 +108,8 @@ public class UserController {
 		}
 	}
 	
+	//register
+	//username, password, phoneNumber, address, roles
 	public Response<User> register(String username, String password, String phoneNumber, String address, String roles) {
 		Response<User> validationResponse = checkAccountValidation(username, password, phoneNumber, address, roles);
 		if(validationResponse.success) {
@@ -115,6 +126,8 @@ public class UserController {
 		return validationResponse;
 	}
 	
+	//isUsernameUnique
+	//Check apakah nama unique
 	private boolean isUsernameUnique(String username) {
 		Vector<User> userList = getUsers();
 		 for (User user : userList) {
@@ -125,6 +138,8 @@ public class UserController {
 		return true;
 	}
 	
+	//isPasswordValid
+	//Check password sesuai dengan ketentuan 
 	private boolean isPasswordValid(String password) {
 		char[] specialCharacters = {'!', '@', '#', '$', '%', '^', '&', '*'};
         for (char specialChar : specialCharacters) {
@@ -136,6 +151,8 @@ public class UserController {
 	}
 	
 
+	//isValidPhoneNumber
+	//checking phone number
     private boolean isValidPhoneNumber(String phoneNumber) {
         if (phoneNumber == null || phoneNumber.isEmpty()) {
             return false;
@@ -159,6 +176,9 @@ public class UserController {
         return true;
     }
 	
+    
+    //checkAccountValidation
+    //check semua validasi sebelum register
 	public Response<User> checkAccountValidation(String username, String password, String phoneNumber, String address, String roles) {
 		if(username.isEmpty()) {
 			return new Response<>(false, "Username can't be empty", null);
