@@ -17,17 +17,21 @@ import javafx.stage.Stage;
 import model.User;
 import utils.Dialog;
 import utils.Response;
+import utils.Viewable;
+import view.ViewManager;
 
 
-class RegisterView {
-    public void start(Stage primaryStage) {
-        GridPane grid = new GridPane();
+public class RegisterView implements Viewable {
+	
+	private final GridPane grid;
+
+    public RegisterView(ViewManager viewManager) {
+		grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
 
-        // Add UI elements
         Label userNameLabel = new Label("Username:");
         grid.add(userNameLabel, 0, 0);
 
@@ -80,12 +84,7 @@ class RegisterView {
             if(registerResponse.success) {
             	Dialog successDialog = new Dialog();
             	successDialog.showSuccessDialog(registerResponse.message);
-            	LoginView loginView = new LoginView();
-            	try {
-					loginView.start(primaryStage);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
+            	viewManager.showView("login");
             }
             else {
             	Dialog errorDialog = new Dialog();
@@ -94,17 +93,12 @@ class RegisterView {
         });
         
         loginLink.setOnAction(e -> {
-            LoginView loginView = new LoginView();
-            try {
-				loginView.start(primaryStage);
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
+        	viewManager.showView("login");
         });
+    }
 
-        Scene scene = new Scene(grid, 400, 300);
-        primaryStage.setTitle("Register View");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+    @Override
+    public GridPane getView() {
+        return grid;
     }
 }

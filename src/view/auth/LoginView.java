@@ -1,26 +1,27 @@
 package view.auth;
 
 import controller.UserController;
-import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
+import model.User;
 import utils.Dialog;
 import utils.Response;
-import view.AppView;
+import utils.Viewable;
+import view.HomeView;
+import view.ViewManager;
 
-public class LoginView extends Application{
+public class LoginView implements Viewable{
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-        GridPane grid = new GridPane();
+	private final GridPane grid;
+
+	public LoginView(ViewManager vm) {
+        grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(10);
@@ -47,11 +48,15 @@ public class LoginView extends Application{
         loginButton.setOnAction(e -> {
             String username = userNameField.getText();
             String password = passwordField.getText();
-            Response loginResponse = UserController.getInstance().login(username, password);
+            Response<User> loginResponse = UserController.getInstance().login(username, password);
             if(loginResponse.success) {
             	 Dialog successDialog = new Dialog();
             	 successDialog.showSuccessDialog(loginResponse.message);
-            	 new AppView(primaryStage);
+            	 if (vm.getView("home") == null) {
+ 		            HomeView homeView = new HomeView(vm);
+ 		            vm.registerView("home", homeView.getView());
+ 		            vm.showView("home");
+ 		        }
             }
             else {
             	Dialog errorDialog = new Dialog();
@@ -60,16 +65,13 @@ public class LoginView extends Application{
         });
         
         registerLink.setOnAction(e -> {
-            RegisterView registerView = new RegisterView();
-            registerView.start(primaryStage);
-        });
-
-        Scene scene = new Scene(grid, 300, 200);
-        primaryStage.setTitle("Login View");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-        
-       
+            vm.showView("register");
+        });        
+	}
+	
+	@Override
+	public GridPane getView() {
+		return grid;
 	}
 
 }
