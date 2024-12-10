@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import database.Connect;
 import model.Item;
+import utils.LoggedUser;
 import utils.Response;
 
 public class ItemController {
@@ -36,7 +37,8 @@ public class ItemController {
 				int wishlist = rs.getInt("wishlist"); //Wishlist itung berapa orang yang suka produk ini
 				String offerStatus = rs.getString("offer_status"); //Apakah sudah pernah di offer atau enggak
 				int itemOfferPrice = rs.getInt("item_offer_price"); //Harga offer terbaru
-				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice);
+				String sellerId = rs.getString("seller_id");
+				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId);
 				itemList.add(item);
 			}
 		} catch (Exception e) {
@@ -61,7 +63,8 @@ public class ItemController {
 				int wishlist = rs.getInt("wishlist"); //Wishlist itung berapa orang yang suka produk ini
 				String offerStatus = rs.getString("offer_status"); //Apakah sudah pernah di offer atau enggak
 				int itemOfferPrice = rs.getInt("item_offer_price"); //Harga offer terbaru
-				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice);
+				String sellerId = rs.getString("seller_id");
+				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId);
 				return item;
 	        }
 	    } catch (Exception e) {
@@ -98,9 +101,9 @@ public class ItemController {
 			try {
 				String itemId = generateNewitemId();
 				String query = String.format("INSERT INTO ITEMS VALUES "
-						+ "('%s', '%s', '%d', '%d', '%s', '%s', '%d', '%s','%d')",
-						itemId, name, size, price, category, "Pending", 0, "No Offer", 0);
-				Item insertedItem = new Item(itemId, name, size, price, category);
+						+ "('%s', '%s', '%d', '%d', '%s', '%s', '%d', '%s','%d', '%s')",
+						itemId, name, size, price, category, "Pending", 0, "No Offer", 0, LoggedUser.getInstance().getCurrentUser().getUserId());
+				Item insertedItem = new Item(itemId, name, size, price, category, LoggedUser.getInstance().getCurrentUser().getUserId());
 				Connect.getInstance().execute(query);
 				return new Response<>(true, "Item's successfully inserted", insertedItem);
 			} catch (Exception e) {
@@ -169,7 +172,8 @@ public class ItemController {
 				int wishlist = rs.getInt("wishlist"); //Wishlist itung berapa orang yang suka produk ini
 				String offerStatus = rs.getString("offer_status"); //Apakah sudah pernah di offer atau enggak
 				int itemOfferPrice = rs.getInt("item_offer_price"); //Harga offer terbaru
-				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice);
+				String sellerId = rs.getString("seller_id");
+				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId);
 				items.add(item);
 	        }
 	    } catch (Exception e) {
@@ -263,7 +267,8 @@ public class ItemController {
 				int wishlist = rs.getInt("wishlist"); //Wishlist itung berapa orang yang suka produk ini
 				String offerStatus = rs.getString("offer_status"); //Apakah sudah pernah di offer atau enggak
 				int itemOfferPrice = rs.getInt("item_offer_price"); //Harga offer terbaru
-				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice);
+				String sellerId = rs.getString("seller_id");
+				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId);
 				itemList.add(item);
 			}
 		} catch (Exception e) {
@@ -271,6 +276,34 @@ public class ItemController {
 			return new Response<>(false, "Error occured", null);
 		}
 		return new Response<>(true, "Item with approved status", itemList);
+	}
+	
+	public Response<Vector<Item>> viewItemBySellerId(String sellerId) {
+		//Idea:
+		//Ambil semua item yang statusnya approved?
+		Vector<Item> itemList = new Vector<>();
+		try {
+			String query = String.format("SELECT * FROM items WHERE seller_id = '%s'", sellerId);
+			
+			ResultSet rs = Connect.getInstance().execQuery(query);
+			while (rs.next()) {
+				String itemId = rs.getString("item_id");
+				String name = rs.getString("name");
+				int size = rs.getInt("size");
+				int price = rs.getInt("price");
+				String category = rs.getString("category");
+				String status = rs.getString("status"); //Di acc admin atau enggak
+				int wishlist = rs.getInt("wishlist"); //Wishlist itung berapa orang yang suka produk ini
+				String offerStatus = rs.getString("offer_status"); //Apakah sudah pernah di offer atau enggak
+				int itemOfferPrice = rs.getInt("item_offer_price"); //Harga offer terbaru
+				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId);
+				itemList.add(item);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Response<>(false, "Error occured", null);
+		}
+		return new Response<>(true, "Item with seller Id status", itemList);
 	}
 	
 	

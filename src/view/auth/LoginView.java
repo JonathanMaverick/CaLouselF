@@ -3,6 +3,7 @@ package view.auth;
 import controller.UserController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -55,8 +56,8 @@ public class LoginView implements Viewable{
             	 if (vm.getView("home") == null) {
  		            HomeView homeView = new HomeView(vm);
  		            vm.registerView("home", homeView.getView());
- 		            vm.showView("home");
  		        }
+            	vm.showView("home");
             }
             else {
             	Dialog errorDialog = new Dialog();
@@ -65,13 +66,17 @@ public class LoginView implements Viewable{
         });
         
         registerLink.setOnAction(e -> {
-            vm.showView("register");
+        	 if (vm.getView("register") == null) {
+	            RegisterView registerView = new RegisterView(vm);
+	            vm.registerView("register", registerView.getView());
+        	 }
+        	 vm.showView("register");
         });        
 	}
 	
 	@Override
-	public GridPane getView() {
-		return grid;
+	public Scene getView() {
+		return new Scene(grid, 800, 600);
 	}
 
 }

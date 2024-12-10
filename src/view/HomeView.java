@@ -2,11 +2,8 @@ package view;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import utils.LoggedUser;
 import utils.Viewable;
 import view.component.Navbar;
@@ -16,10 +13,10 @@ public class HomeView implements Viewable {
 	private final BorderPane grid;
 	
 
-    public HomeView(ViewManager viewManager) {
+    public HomeView(ViewManager vm) {
         grid = new BorderPane();
 
-        MenuBar navbar = new Navbar().createNavbar(LoggedUser.getInstance().getCurrentUser().getRoles());
+        Navbar navbar = Navbar.getInstance(vm, LoggedUser.getInstance().getCurrentUser().getRoles());
         grid.setTop(navbar);
 
         VBox mainContent = createMainContent();
@@ -41,8 +38,8 @@ public class HomeView implements Viewable {
     }
 
 	@Override
-	public Pane getView() {
-		return grid;
+	public Scene getView() {
+		return new Scene(grid, 800, 600);
 	}
     
 }

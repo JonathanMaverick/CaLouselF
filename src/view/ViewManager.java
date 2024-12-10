@@ -11,7 +11,7 @@ public class ViewManager {
 
     private static ViewManager instance;  
     private Stage stage;
-    private Map<String, Pane> views; 
+    private Map<String, Scene> views; 
 
     private ViewManager(Stage stage) {
         this.stage = stage;
@@ -25,18 +25,17 @@ public class ViewManager {
         return instance;
     }
 
-    public void registerView(String name, Pane view) {
-        views.put(name, view);
+    public void registerView(String name, Scene scene) {
+        views.put(name, scene);
     }
     
-    public Pane getView(String name) {
+    public Scene getView(String name) {
         return views.get(name);
     }
 
     public void showView(String name) {
-        Pane view = getView(name);
-        if (view != null) {
-            Scene scene = new Scene(view, 800, 800);
+    	Scene scene = getView(name); // Get Scene
+        if (scene != null) {
             stage.setScene(scene);
             stage.show();
         }

@@ -1,7 +1,7 @@
 package utils;
 
-import javafx.scene.layout.Pane;
+import javafx.scene.Scene;
 
 public interface Viewable {
-    Pane getView();
+    public Scene getView();
 }

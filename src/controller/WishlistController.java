@@ -4,8 +4,6 @@ import java.sql.ResultSet;
 import java.util.Vector;
 
 import database.Connect;
-import model.Item;
-import model.Transaction;
 import model.Wishlist;
 import utils.Response;
 

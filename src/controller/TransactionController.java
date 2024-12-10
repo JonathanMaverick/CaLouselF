@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.util.Vector;
 
 import database.Connect;
-import model.Offer;
 import model.Transaction;
 import utils.Response;
 

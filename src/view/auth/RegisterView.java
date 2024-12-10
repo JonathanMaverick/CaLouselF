@@ -13,7 +13,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
 import model.User;
 import utils.Dialog;
 import utils.Response;
@@ -25,7 +24,7 @@ public class RegisterView implements Viewable {
 	
 	private final GridPane grid;
 
-    public RegisterView(ViewManager viewManager) {
+    public RegisterView(ViewManager vm) {
 		grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
@@ -84,7 +83,7 @@ public class RegisterView implements Viewable {
             if(registerResponse.success) {
             	Dialog successDialog = new Dialog();
             	successDialog.showSuccessDialog(registerResponse.message);
-            	viewManager.showView("login");
+            	vm.showView("login");
             }
             else {
             	Dialog errorDialog = new Dialog();
@@ -92,13 +91,18 @@ public class RegisterView implements Viewable {
             }
         });
         
-        loginLink.setOnAction(e -> {
-        	viewManager.showView("login");
+        loginLink.setOnAction(e -> { 
+            if (vm.getView("login") == null) {
+                LoginView loginView = new LoginView(vm); 
+                vm.registerView("login", loginView.getView()); 
+            }
+            vm.showView("login"); 
         });
+
     }
 
     @Override
-    public GridPane getView() {
-        return grid;
+    public Scene getView() {
+        return new Scene(grid, 800, 600);
     }
 }

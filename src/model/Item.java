@@ -2,7 +2,7 @@ package model;
 
 public class Item {
 	
-	private String itemID;
+	private String itemId;
 	private String name;
 	private int size;
 	private int price;
@@ -11,20 +11,22 @@ public class Item {
 	private int wishlist;
 	private String offerStatus;
 	private int itemOfferPrice;
+	private String sellerId;
 	
-	public Item(String itemID, String name, int size, int price, String category) {
+	public Item(String itemId, String name, int size, int price, String category, String sellerId) {
 		super();
-		this.itemID = itemID;
+		this.itemId = itemId;
 		this.name = name;
 		this.size = size;
 		this.price = price;
 		this.category = category;
+		this.setSellerId(sellerId);
 	}
 	
-	public Item(String itemID, String name, int size, int price, String category, String status, int wishlist,
-			String offerStatus, int itemOfferPrice) {
+	public Item(String itemId, String name, int size, int price, String category, String status, int wishlist,
+			String offerStatus, int itemOfferPrice, String sellerId) {
 		super();
-		this.itemID = itemID;
+		this.itemId = itemId;
 		this.name = name;
 		this.size = size;
 		this.price = price;
@@ -33,12 +35,14 @@ public class Item {
 		this.wishlist = wishlist;
 		this.offerStatus = offerStatus;
 		this.itemOfferPrice = itemOfferPrice;
+		this.setSellerId(sellerId);
 	}
+	
 	public String getId() {
-		return itemID;
+		return itemId;
 	}
-	public void setId(String itemID) {
-		this.itemID = itemID;
+	public void setId(String itemId) {
+		this.itemId = itemId;
 	}
 	public String getName() {
 		return name;
@@ -87,6 +91,14 @@ public class Item {
 	}
 	public void setItemOfferPrice(int itemOfferPrice) {
 		this.itemOfferPrice = itemOfferPrice;
+	}
+
+	public String getSellerId() {
+		return sellerId;
+	}
+
+	public void setSellerId(String sellerId) {
+		this.sellerId = sellerId;
 	}
 	
 }
