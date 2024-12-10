@@ -56,7 +56,6 @@ public class ViewItemSellerView implements Viewable {
 
         Response<Vector<Item>> response = ItemController.getInstance().viewItemBySellerId(LoggedUser.getInstance().getCurrentUser().getUserId());
         if (response.success) {
-        	System.out.println(response.data);
             table.getItems().setAll(response.data); 
         } else {
             Dialog errorDialog = new Dialog();
