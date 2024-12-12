@@ -17,11 +17,11 @@ import utils.Viewable;
 import view.HomeView;
 import view.ViewManager;
 
-public class LoginView implements Viewable{
+public class Login implements Viewable{
 
 	private final GridPane grid;
 
-	public LoginView(ViewManager vm) {
+	public Login(ViewManager vm) {
         grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
@@ -67,7 +67,7 @@ public class LoginView implements Viewable{
         
         registerLink.setOnAction(e -> {
         	 if (vm.getView("register") == null) {
-	            RegisterView registerView = new RegisterView(vm);
+	            Register registerView = new Register(vm);
 	            vm.registerView("register", registerView.getView());
         	 }
         	 vm.showView("register");

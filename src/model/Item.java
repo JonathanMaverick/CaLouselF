@@ -12,6 +12,7 @@ public class Item {
 	private String offerStatus;
 	private int itemOfferPrice;
 	private String sellerId;
+	private String reason;
 	
 	public Item(String itemId, String name, int size, int price, String category, String sellerId) {
 		super();
@@ -24,7 +25,7 @@ public class Item {
 	}
 	
 	public Item(String itemId, String name, int size, int price, String category, String status, int wishlist,
-			String offerStatus, int itemOfferPrice, String sellerId) {
+			String offerStatus, int itemOfferPrice, String sellerId, String reason) {
 		super();
 		this.itemId = itemId;
 		this.name = name;
@@ -35,13 +36,22 @@ public class Item {
 		this.wishlist = wishlist;
 		this.offerStatus = offerStatus;
 		this.itemOfferPrice = itemOfferPrice;
+		this.reason = reason;
 		this.setSellerId(sellerId);
 	}
 	
-	public String getId() {
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public String getItemId() {
 		return itemId;
 	}
-	public void setId(String itemId) {
+	public void setItemId(String itemId) {
 		this.itemId = itemId;
 	}
 	public String getName() {

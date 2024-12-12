@@ -17,12 +17,12 @@ import utils.Viewable;
 import view.ViewManager;
 import view.component.Navbar;
 
-public class AddItemView implements Viewable {
+public class AddItem implements Viewable {
 
     private final BorderPane borderPane;
     private final GridPane grid;
 
-    public AddItemView(ViewManager vm) {
+    public AddItem(ViewManager vm) {
     	borderPane = new BorderPane();
 
     	Navbar navbar = Navbar.getInstance(vm, LoggedUser.getInstance().getCurrentUser().getRoles());

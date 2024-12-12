@@ -38,7 +38,8 @@ public class ItemController {
 				String offerStatus = rs.getString("offer_status"); //Apakah sudah pernah di offer atau enggak
 				int itemOfferPrice = rs.getInt("item_offer_price"); //Harga offer terbaru
 				String sellerId = rs.getString("seller_id");
-				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId);
+				String reason = rs.getString("reason");
+				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId, reason);
 				itemList.add(item);
 			}
 		} catch (Exception e) {
@@ -48,11 +49,42 @@ public class ItemController {
 		return itemList;
 	}
 	
+	//viewItem
+	//Ambil semua item, tanpa peduli status
+	public Response<Vector<Item>> viewItemPending(){
+		Vector<Item> itemList = new Vector<>();
+		try {
+			String query = "SELECT * FROM items WHERE status = 'Pending'";
+			
+			ResultSet rs = Connect.getInstance().execQuery(query);
+			while (rs.next()) {
+				String itemId = rs.getString("item_id");
+				String name = rs.getString("name");
+				int size = rs.getInt("size");
+				int price = rs.getInt("price");
+				String category = rs.getString("category");
+				String status = rs.getString("status"); //Di acc admin atau enggak
+				int wishlist = rs.getInt("wishlist"); //Wishlist itung berapa orang yang suka produk ini
+				String offerStatus = rs.getString("offer_status"); //Apakah sudah pernah di offer atau enggak
+				int itemOfferPrice = rs.getInt("item_offer_price"); //Harga offer terbaru
+				String sellerId = rs.getString("seller_id");
+				String reason = rs.getString("reason");
+				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId, reason);
+				itemList.add(item);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Response<>(false, "Fail", null);
+		}
+		Response<Vector<Item>> res = new Response<>(true, "Success", itemList);
+		return res;
+	}
+	
 	//getItem
 	//Ambil item berdasarkan itemId yang ada
 	public Item getItem(String itemId) {
         try {
-        	String query = String.format("SELECT * FROM ITEMS WHERE item_id LIKE '%s%'", itemId);
+        	String query = String.format("SELECT * FROM ITEMS WHERE status LIKE 'Pending'");
 	        ResultSet rs = Connect.getInstance().execQuery(query);
 	        while (rs.next()) {
 				String name = rs.getString("name");
@@ -64,7 +96,8 @@ public class ItemController {
 				String offerStatus = rs.getString("offer_status"); //Apakah sudah pernah di offer atau enggak
 				int itemOfferPrice = rs.getInt("item_offer_price"); //Harga offer terbaru
 				String sellerId = rs.getString("seller_id");
-				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId);
+				String reason = rs.getString("reason");
+				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId, reason);
 				return item;
 	        }
 	    } catch (Exception e) {
@@ -119,12 +152,16 @@ public class ItemController {
 	//editItem
 	//Edit Item
 	public Response<Item> editItem(String itemId, String name, int size, int price, String category) {
+		Response<Item> res = checkItemValidation(name, category, size, price);
+		if (!res.success) {
+			return res;
+		}
 		try {
-			 String query = String.format("UPDATE ITEMS SET " +
+			String query = String.format("UPDATE ITEMS SET " +
 		                "name = '%s', " +
-		                "size = '%d', " +
-		                "price = '%d', " +
-		                "category = '%s', " +
+		                "size = %d, " +
+		                "price = %d, " +
+		                "category = '%s' " +
 		                "WHERE item_id = '%s'",
 		                name, size, price, category, itemId);
 			 
@@ -173,7 +210,8 @@ public class ItemController {
 				String offerStatus = rs.getString("offer_status"); //Apakah sudah pernah di offer atau enggak
 				int itemOfferPrice = rs.getInt("item_offer_price"); //Harga offer terbaru
 				String sellerId = rs.getString("seller_id");
-				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId);
+				String reason = rs.getString("reason");
+				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId, reason);
 				items.add(item);
 	        }
 	    } catch (Exception e) {
@@ -267,8 +305,9 @@ public class ItemController {
 				int wishlist = rs.getInt("wishlist"); //Wishlist itung berapa orang yang suka produk ini
 				String offerStatus = rs.getString("offer_status"); //Apakah sudah pernah di offer atau enggak
 				int itemOfferPrice = rs.getInt("item_offer_price"); //Harga offer terbaru
+				String reason = rs.getString("reason");
 				String sellerId = rs.getString("seller_id");
-				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId);
+				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId, reason);
 				itemList.add(item);
 			}
 		} catch (Exception e) {
@@ -283,7 +322,7 @@ public class ItemController {
 		//Ambil semua item yang statusnya approved?
 		Vector<Item> itemList = new Vector<>();
 		try {
-			String query = String.format("SELECT * FROM items WHERE seller_id = '%s'", sellerId);
+			String query = String.format("SELECT * FROM items WHERE seller_id = '%s' AND status = 'Approved'", sellerId);
 			
 			ResultSet rs = Connect.getInstance().execQuery(query);
 			while (rs.next()) {
@@ -296,7 +335,8 @@ public class ItemController {
 				int wishlist = rs.getInt("wishlist"); //Wishlist itung berapa orang yang suka produk ini
 				String offerStatus = rs.getString("offer_status"); //Apakah sudah pernah di offer atau enggak
 				int itemOfferPrice = rs.getInt("item_offer_price"); //Harga offer terbaru
-				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId);
+				String reason = rs.getString("reason");
+				Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId, reason);
 				itemList.add(item);
 			}
 		} catch (Exception e) {

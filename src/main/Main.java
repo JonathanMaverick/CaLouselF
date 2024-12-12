@@ -3,7 +3,7 @@ package main;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import view.ViewManager;
-import view.auth.LoginView;
+import view.auth.Login;
 
 public class Main extends Application{
 	
@@ -12,7 +12,7 @@ public class Main extends Application{
 
     	vm = ViewManager.getInstance(primaryStage);
     	if (vm.getView("login") == null) {
-            LoginView loginView = new LoginView(vm); 
+            Login loginView = new Login(vm); 
             vm.registerView("login", loginView.getView()); 
         }
 

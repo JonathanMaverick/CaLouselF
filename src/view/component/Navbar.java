@@ -4,8 +4,9 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import view.ViewManager;
-import view.seller.AddItemView;
-import view.seller.ViewItemSellerView;
+import view.admin.ViewItemPending;
+import view.seller.AddItem;
+import view.seller.ViewItemSeller;
 
 public class Navbar extends MenuBar {
 
@@ -36,7 +37,7 @@ public class Navbar extends MenuBar {
 
     private void initRoleSpecificMenus(ViewManager vm, String role) {
         if ("Admin".equals(role)) {
-            initAdminMenu();
+            initAdminMenu(vm);
         } else if ("Seller".equals(role)) {
             initSellerMenu(vm);
         } else if ("Buyer".equals(role)) {
@@ -44,9 +45,14 @@ public class Navbar extends MenuBar {
         }
     }
 
-    private void initAdminMenu() {
-        Menu adminMenu = new Menu("View Requested Item");
-        this.getMenus().add(adminMenu);
+    private void initAdminMenu(ViewManager vm) {
+        Menu adminMenu = new Menu("Admin");
+
+        MenuItem viewRequestedItem = new MenuItem("View Item Pending");
+        viewRequestedItem.setOnAction(e -> viewItemAdmin(vm));
+        
+        adminMenu.getItems().add(viewRequestedItem); 
+        this.getMenus().add(adminMenu); 
     }
 
     private void initSellerMenu(ViewManager vm) {
@@ -76,7 +82,7 @@ public class Navbar extends MenuBar {
 
     private void showAddItemView(ViewManager vm) {
         if (vm.getView("add_item") == null) {
-            AddItemView addItemView = new AddItemView(vm);
+            AddItem addItemView = new AddItem(vm);
             vm.registerView("add_item", addItemView.getView());
         }
         vm.showView("add_item");
@@ -84,9 +90,17 @@ public class Navbar extends MenuBar {
     
     private void viewItemBySeller(ViewManager vm) {
     	if (vm.getView("view_item_by_seller") == null) {
-            ViewItemSellerView viewItemSellerView = new ViewItemSellerView(vm);
+            ViewItemSeller viewItemSellerView = new ViewItemSeller(vm);
             vm.registerView("view_item_by_seller", viewItemSellerView.getView());
         }
         vm.showView("view_item_by_seller");
+    }
+    
+    private void viewItemAdmin(ViewManager vm) {
+    	if(vm.getView("view_item") == null) {
+    		ViewItemPending viewItem = new ViewItemPending(vm);
+    		vm.registerView("view_item", viewItem.getView());
+    	}
+    	vm.showView("view_item");
     }
 }
