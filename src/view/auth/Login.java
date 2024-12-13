@@ -3,7 +3,6 @@ package view.auth;
 import controller.UserController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -13,70 +12,85 @@ import javafx.scene.layout.GridPane;
 import model.User;
 import utils.Dialog;
 import utils.Response;
-import utils.Viewable;
-import view.HomeView;
+import utils.SceneCreator;
+import view.Home;
 import view.ViewManager;
 
-public class Login implements Viewable{
+public class Login extends GridPane implements SceneCreator {
 
-	private final GridPane grid;
+	private TextField userNameField;
+	private PasswordField passwordField;
+	private Button loginButton;
+	private Hyperlink registerLink;
+	private Label usernameLabel, passwordLabel;
 
-	public Login(ViewManager vm) {
-        grid = new GridPane();
-        grid.setAlignment(Pos.CENTER);
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(25, 25, 25, 25));
-
-        Label userNameLabel = new Label("Username:");
-        grid.add(userNameLabel, 0, 0);
-
-        TextField userNameField = new TextField();
-        grid.add(userNameField, 1, 0);
-
-        Label passwordLabel = new Label("Password:");
-        grid.add(passwordLabel, 0, 1);
-
-        PasswordField passwordField = new PasswordField();
-        grid.add(passwordField, 1, 1);
-
-        Button loginButton = new Button("Login");
-        grid.add(loginButton, 1, 2);
-        
-        Hyperlink registerLink = new Hyperlink("Register Here");
-        grid.add(registerLink, 1, 3);
-
-        loginButton.setOnAction(e -> {
-            String username = userNameField.getText();
-            String password = passwordField.getText();
-            Response<User> loginResponse = UserController.getInstance().login(username, password);
-            if(loginResponse.success) {
-            	 Dialog successDialog = new Dialog();
-            	 successDialog.showSuccessDialog(loginResponse.message);
-            	 if (vm.getView("home") == null) {
- 		            HomeView homeView = new HomeView(vm);
- 		            vm.registerView("home", homeView.getView());
- 		        }
-            	vm.showView("home");
-            }
-            else {
-            	Dialog errorDialog = new Dialog();
-                errorDialog.showErrorDialog(loginResponse.message);
-            }
-        });
-        
-        registerLink.setOnAction(e -> {
-        	 if (vm.getView("register") == null) {
-	            Register registerView = new Register(vm);
-	            vm.registerView("register", registerView.getView());
-        	 }
-        	 vm.showView("register");
-        });        
+	public Login() {
+		init();
+		design();
+		setAction();
 	}
-	
+
 	@Override
-	public Scene getView() {
-		return new Scene(grid, 800, 600);
+	public void init() {
+		userNameField = new TextField();
+		passwordField = new PasswordField();
+		usernameLabel = new Label("Username:");
+		passwordLabel = new Label("Password:");
+
+		loginButton = new Button("Login");
+		this.add(loginButton, 1, 2);
+
+		registerLink = new Hyperlink("Register Here");
+		this.add(registerLink, 1, 3);
 	}
 
+	@Override
+	public void design() {
+		this.add(usernameLabel, 0, 0);
+		this.add(userNameField, 1, 0);
+		this.add(passwordLabel, 0, 1);
+		this.add(passwordField, 1, 1);
+
+		this.setAlignment(Pos.CENTER);
+		this.setHgap(10);
+		this.setVgap(10);
+		this.setPadding(new Insets(25, 25, 25, 25));
+
+		userNameField.setStyle("-fx-padding: 10;");
+		passwordField.setStyle("-fx-padding: 10;");
+		loginButton.setStyle("-fx-padding: 10 20;");
+		registerLink.setStyle("-fx-text-fill: #0066cc;");
+	}
+
+	public void setAction() {
+		loginButton.setOnAction(e -> handleLogin());
+		registerLink.setOnAction(e -> handleRegisterLink());
+	}
+
+	private void handleLogin() {
+		String username = userNameField.getText();
+		String password = passwordField.getText();
+		Response<User> loginResponse = UserController.getInstance().login(username, password);
+
+		if (loginResponse.success) {
+			showSuccessDialog(loginResponse.message);
+			ViewManager.getInstance().switchTo(new Home());
+		} else {
+			showErrorDialog(loginResponse.message);
+		}
+	}
+
+	private void handleRegisterLink() {
+		ViewManager.getInstance().switchTo(new Register());
+	}
+
+	private void showSuccessDialog(String message) {
+		Dialog successDialog = new Dialog();
+		successDialog.showSuccessDialog(message);
+	}
+
+	private void showErrorDialog(String message) {
+		Dialog errorDialog = new Dialog();
+		errorDialog.showErrorDialog(message);
+	}
 }

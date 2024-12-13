@@ -38,7 +38,7 @@ public class WishlistController {
 	public Response<Wishlist> addWishlist(String userId, String itemId){
 		try {
 			String wishlistId = generateNewWishlistId();
-			String query = String.format("INSERT INTO Transactions VALUES "
+			String query = String.format("INSERT INTO wishlists VALUES "
 					+ "('%s', '%s', '%s')",
 					wishlistId, userId, itemId);
 			Wishlist insertedWishlist = new Wishlist(wishlistId, userId, itemId);
@@ -50,21 +50,24 @@ public class WishlistController {
 		}
 	}
     
-    public Vector<Wishlist> viewWishlist(String userId){
+    public Response<Vector<Wishlist>> viewWishlist(String userId){
     	Vector<Wishlist> wishlistList = new Vector<>();
     	try {
-        	String query = String.format("SELECT * FROM wishlists WHERE user_id ='%s'", userId);
+        	String query = String.format("SELECT * FROM wishlists wi "
+        			+ "JOIN items i ON i.item_id = wi.item_id WHERE user_id ='%s'", userId);
 	        ResultSet rs = Connect.getInstance().execQuery(query);
 	        while (rs.next()) {
 				String itemId = rs.getString("item_id");
 				String transactionId = rs.getString("wishlist_id");
-				Wishlist wishlists = new Wishlist(transactionId, userId, itemId);
+				String name = rs.getString("name");
+				int price = rs.getInt("price");
+				Wishlist wishlists = new Wishlist(transactionId, itemId, userId, name, price);
 				wishlistList.add(wishlists);
 	        }
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
-        return wishlistList;
+        return new Response<Vector<Wishlist>>(true, "Wishlist fetched", wishlistList);
     }
     
 	public Response<Wishlist> removeWishlist(String wishlistId) {
@@ -73,6 +76,17 @@ public class WishlistController {
 			
 			Connect.getInstance().execute(query);
 		
+			return new Response<>(true, "Wishlist deleted", null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Response<>(false, "Wishlist not deleted", null);
+		}
+	}
+	
+	public Response<Wishlist> removeWishlistByItemId(String itemId, String userId) {
+		try {
+			String query = String.format("DELETE FROM wishlists WHERE item_id = '%s' AND user_id = '%s'",itemId, userId);
+			Connect.getInstance().execute(query);
 			return new Response<>(true, "Wishlist deleted", null);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -19,8 +19,8 @@ public class UserController {
         return instance;
     }
 	
-    //getUsers
-    //Ambil semua user
+    // getUsers
+    // Retrieve all users
 	private Vector<User> getUsers(){
 		Vector<User> userList = new Vector<>();
 		try {
@@ -43,8 +43,8 @@ public class UserController {
 		return userList;
 	}
 	
-	//generateNewUserId
-	//Ngebuat id baru untuk user baru
+	// generateNewUserId
+	// Generate a new ID for a new user
 	private String generateNewUserId(){
 	    String query = "SELECT MAX(user_id) AS max_id FROM users"; 
 	    try {
@@ -63,8 +63,8 @@ public class UserController {
 		}
 	}
 	
-	//getUser
-	//Mengambil user berdasarkan userId
+	// getUser
+	// Retrieve a user based on userId
 	private User getUser(String userId) {
 		try {
 			String query = String.format("SELECT * FROM users WHERE user_id = '%s' LIMIT 1", userId);
@@ -86,9 +86,8 @@ public class UserController {
 		return null;
 	}
 	
-	
-	//login
-	//login berdasarkan username dan password
+	// login
+	// Login based on username and password
 	public Response<User> login(String username, String password) {
 		try {
 			String query = String.format("SELECT * FROM users WHERE username = '%s' AND password = '%s'", username,
@@ -104,12 +103,12 @@ public class UserController {
 			return new Response<>(false, "User not found", null);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Response<>(false, "Error occured", null);
+			return new Response<>(false, "Error occurred", null);
 		}
 	}
 	
-	//register
-	//username, password, phoneNumber, address, roles
+	// register
+	// Register a new user with username, password, phoneNumber, address, roles
 	public Response<User> register(String username, String password, String phoneNumber, String address, String roles) {
 		Response<User> validationResponse = checkAccountValidation(username, password, phoneNumber, address, roles);
 		if(validationResponse.success) {
@@ -120,14 +119,14 @@ public class UserController {
 				return validationResponse;
 			} catch (Exception e) {
 				e.printStackTrace();
-				return new Response<>(false, "An error occured", null);
+				return new Response<>(false, "An error occurred", null);
 			}
 		}
 		return validationResponse;
 	}
 	
-	//isUsernameUnique
-	//Check apakah nama unique
+	// isUsernameUnique
+	// Check if username is unique
 	private boolean isUsernameUnique(String username) {
 		Vector<User> userList = getUsers();
 		 for (User user : userList) {
@@ -138,8 +137,8 @@ public class UserController {
 		return true;
 	}
 	
-	//isPasswordValid
-	//Check password sesuai dengan ketentuan 
+	// isPasswordValid
+	// Check if password meets the requirements
 	private boolean isPasswordValid(String password) {
 		char[] specialCharacters = {'!', '@', '#', '$', '%', '^', '&', '*'};
         for (char specialChar : specialCharacters) {
@@ -151,8 +150,8 @@ public class UserController {
 	}
 	
 
-	//isValidPhoneNumber
-	//checking phone number
+	// isValidPhoneNumber
+	// Check if phone number is valid
     private boolean isValidPhoneNumber(String phoneNumber) {
         if (phoneNumber == null || phoneNumber.isEmpty()) {
             return false;
@@ -176,30 +175,29 @@ public class UserController {
         return true;
     }
 	
-    
-    //checkAccountValidation
-    //check semua validasi sebelum register
+    // checkAccountValidation
+    // Validate all inputs before registering
 	public Response<User> checkAccountValidation(String username, String password, String phoneNumber, String address, String roles) {
 		if(username.isEmpty()) {
 			return new Response<>(false, "Username can't be empty", null);
 		}
 		else if (username.length() < 3) {
-			return 	new Response<>(false, "Username at least 3 character", null);
+			return 	new Response<>(false, "Username must be at least 3 characters long", null);
 		}
 		else if (!isUsernameUnique(username)) {
-			return new Response<>(false, "Username not unique", null);
+			return new Response<>(false, "Username is not unique", null);
 		}
 		else if (password.isEmpty()) {
 			return new Response<>(false, "Password can't be empty", null);
 		}
 		else if (password.length() < 8) {
-			return new Response<>(false, "Password at least 8 character", null);
+			return new Response<>(false, "Password must be at least 8 characters long", null);
 		}
 		else if (!isPasswordValid(password)) {
 			return new Response<>(false, "Password must include special characters (!, @, #, $, %, ^, &, *)", null);
 		}
 		else if(!isValidPhoneNumber(phoneNumber)) {
-			return new Response<>(false,"Phone number must at least contains a +62 and 10 numbers long ", null);
+			return new Response<>(false,"Phone number must start with +62 and be at least 10 digits long", null);
 		}
 		else if(address.isEmpty()) {
 			return new Response<>(false, "Address can't be empty", null);

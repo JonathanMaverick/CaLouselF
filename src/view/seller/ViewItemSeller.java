@@ -7,9 +7,9 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -20,32 +20,59 @@ import model.Item;
 import utils.Dialog;
 import utils.LoggedUser;
 import utils.Response;
-import utils.Viewable;
-import view.ViewManager;
+import utils.SceneCreator;
 import view.component.Navbar;
 
-public class ViewItemSeller implements Viewable {
+public class ViewItemSeller extends BorderPane implements SceneCreator {
 
-    private final BorderPane borderPane;
-    private final GridPane grid;
+    private GridPane grid;
+    private Dialog dialog;
+    private MenuBar navbar;
+    private VBox formContainer;
+    private TableView<Item> table;
+    private TextField itemIdField, itemNameField, priceField, sizeField, categoryField;
+    
+    public ViewItemSeller() {
+    	init();
+    	design();
+    	createTable();
+    	setAction();        
+        fetch();
+    }
+    
+	@Override
+	public void init() {
+		grid = new GridPane();
+		navbar = new Navbar(LoggedUser.getInstance().getCurrentUser().getRoles());
+		dialog = new Dialog();
+		formContainer = new VBox();
+		table = new TableView<>();
+		
+        itemIdField = new TextField();        
+        itemNameField = new TextField();
+        priceField = new TextField();
+        sizeField = new TextField();
+        categoryField = new TextField();
+	}
 
-    @SuppressWarnings("unchecked")
-    public ViewItemSeller(ViewManager vm) {
-    	Dialog dialog = new Dialog();
-    	
-        borderPane = new BorderPane();
-
-        Navbar navbar = Navbar.getInstance(vm, LoggedUser.getInstance().getCurrentUser().getRoles());
-        borderPane.setTop(navbar);
-
-        grid = new GridPane();
+	@Override
+	public void design() {
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(10, 10, 10, 10));
-
-        TableView<Item> table = new TableView<>();
-        TableColumn<Item, String> itemIdColumn = new TableColumn<>("Item ID");
+        formContainer.setSpacing(10);
+        itemIdField.setDisable(true); 
+        
+        grid.add(table, 0, 0);
+        grid.add(formContainer, 1,0);
+        this.setTop(navbar);
+        this.setCenter(grid);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void createTable() {
+		TableColumn<Item, String> itemIdColumn = new TableColumn<>("Item ID");
         itemIdColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getItemId()));
 
         TableColumn<Item, String> itemNameColumn = new TableColumn<>("Item Name");
@@ -61,20 +88,10 @@ public class ViewItemSeller implements Viewable {
         categoryColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getCategory()));
 
         table.getColumns().addAll(itemIdColumn, itemNameColumn, sizeColumn, priceColumn, categoryColumn);
-        grid.add(table, 0, 0);
-
-        VBox formContainer = new VBox();
-        formContainer.setSpacing(10);
-
-        TextField itemIdField = new TextField();
-        itemIdField.setDisable(true); 
-
-        TextField itemNameField = new TextField();
-        TextField priceField = new TextField();
-        TextField sizeField = new TextField();
-        TextField categoryField = new TextField();
-        
-        table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+	}
+	
+	private void setAction() {
+		table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 itemIdField.setText(newValue.getItemId());
                 itemNameField.setText(newValue.getName());
@@ -89,8 +106,8 @@ public class ViewItemSeller implements Viewable {
                 categoryField.clear();
             }
         });
-
-        Button updateButton = new Button("Update");
+		
+		Button updateButton = new Button("Update");
         updateButton.setOnAction(event -> {
             try {
                 int size = Integer.parseInt(sizeField.getText());
@@ -98,7 +115,7 @@ public class ViewItemSeller implements Viewable {
                 Response<Item> res = ItemController.getInstance().editItem(itemIdField.getText(), itemNameField.getText(), size, price, categoryField.getText());
                 if(res.success) {                	
                 	dialog.showSuccessDialog(res.message);
-                	fetch(table, dialog);
+                	fetch();
                 }
                 else {
                 	dialog.showErrorDialog(res.message);
@@ -112,9 +129,9 @@ public class ViewItemSeller implements Viewable {
         deleteButton.setOnAction(event -> {
             Item selectedItem = table.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
-                // Implement logic to delete the selected item
+                ItemController.getInstance().deleteItem(selectedItem.getItemId());
             } else {
-                // Show error message if no item is selected
+            	dialog.showErrorDialog("You need to select the item first!");
             }
         });
 
@@ -127,15 +144,9 @@ public class ViewItemSeller implements Viewable {
                 updateButton,
                 deleteButton
         );
-        
-        grid.add(formContainer, 1,0);
+	}
 
-        borderPane.setCenter(grid);
-        
-        fetch(table, dialog);
-    }
-    
-    private void fetch(TableView<Item> table, Dialog dialog) {
+    private void fetch() {
         Response<Vector<Item>> response = ItemController.getInstance().viewItemBySellerId(LoggedUser.getInstance().getCurrentUser().getUserId());
         if (response.success) {
             table.getItems().setAll(response.data);
@@ -144,8 +155,5 @@ public class ViewItemSeller implements Viewable {
         }
 	}
 
-    @Override
-    public Scene getView() {
-        return new Scene(borderPane, 800, 600);
-    }
+
 }

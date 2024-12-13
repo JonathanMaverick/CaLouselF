@@ -3,9 +3,9 @@ package view.seller;
 import controller.ItemController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -13,54 +13,61 @@ import model.Item;
 import utils.Dialog;
 import utils.LoggedUser;
 import utils.Response;
-import utils.Viewable;
-import view.ViewManager;
+import utils.SceneCreator;
 import view.component.Navbar;
 
-public class AddItem implements Viewable {
+public class AddItem extends BorderPane implements SceneCreator {
 
-    private final BorderPane borderPane;
-    private final GridPane grid;
+    private GridPane grid;
+    private MenuBar navbar;
+    private Label nameLabel, sizeLabel, priceLabel, categoryLabel;
+    private TextField nameField, sizeField, priceField, categoryField;
+    private Button addButton;
+    
+    public AddItem() {
+    	init();
+    	design();
+    	setAction();
+    }
+    
+	@Override
+	public void init() {
+		navbar = new Navbar(LoggedUser.getInstance().getCurrentUser().getRoles());
+		grid = new GridPane();
+		
+		this.setTop(navbar);
+		nameLabel = new Label("Item Name:");
+		sizeLabel = new Label("Size :");
+		priceLabel = new Label("Price: ");
+		categoryLabel = new Label("Category:");
+		
+		nameField = new TextField();
+		priceField = new TextField();
+		categoryField = new TextField();
+		sizeField = new TextField();
+		
+		addButton = new Button("Tambah Item");
+	}
 
-    public AddItem(ViewManager vm) {
-    	borderPane = new BorderPane();
-
-    	Navbar navbar = Navbar.getInstance(vm, LoggedUser.getInstance().getCurrentUser().getRoles());
-    	borderPane.setTop(navbar);
-    	
-        grid = new GridPane();
-        grid.setAlignment(Pos.CENTER);
+	@Override
+	public void design() {
+		grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
-
-        Label nameLabel = new Label("Item Name:");
         grid.add(nameLabel, 0, 0);
-
-        TextField nameField = new TextField();
         grid.add(nameField, 1, 0);
-
-        Label sizeLabel = new Label("Size :");
         grid.add(sizeLabel, 0, 1);
-
-        TextField sizeField = new TextField();
         grid.add(sizeField, 1, 1);
-
-        Label priceLabel = new Label("Price: ");
         grid.add(priceLabel, 0, 2);
-
-        TextField priceField = new TextField();
         grid.add(priceField, 1, 2);
-
-        Label categoryLabel = new Label("Category:");
         grid.add(categoryLabel, 0, 3);
-
-        TextField categoryField = new TextField();
         grid.add(categoryField, 1, 3);
-
-        Button addButton = new Button("Tambah Item");
         grid.add(addButton, 1, 4);
-
+        this.setCenter(grid);		
+	}
+	
+	public void setAction() {
         addButton.setOnAction(e -> {
             String name = nameField.getText();
             String sizeText = sizeField.getText();
@@ -72,7 +79,6 @@ public class AddItem implements Viewable {
             	errorDialog.showErrorDialog("All values can't be empty");
                 return;
             }
-
             try {
                 int size = Integer.parseInt(sizeText);
                 int price = Integer.parseInt(priceText);
@@ -96,11 +102,5 @@ public class AddItem implements Viewable {
                 errorDialog.showErrorDialog("Price and Size must be number.");
             }
         });
-        borderPane.setCenter(grid);
-    }
-
-    @Override
-    public Scene getView() {
-        return new Scene(borderPane, 800, 600);
-    }
+	}
 }

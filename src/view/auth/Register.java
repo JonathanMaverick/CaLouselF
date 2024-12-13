@@ -3,7 +3,6 @@ package view.auth;
 import controller.UserController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -16,93 +15,100 @@ import javafx.scene.layout.HBox;
 import model.User;
 import utils.Dialog;
 import utils.Response;
-import utils.Viewable;
+import utils.SceneCreator;
 import view.ViewManager;
 
+public class Register extends GridPane implements SceneCreator {
 
-public class Register implements Viewable {
-	
-	private final GridPane grid;
+    private TextField userNameField, phoneField, addressField;
+    private PasswordField passwordField;
+    private RadioButton sellerButton, buyerButton;
+    private ToggleGroup roleGroup;
+    private HBox roleBox;
+    private Button registerButton;
+    private Hyperlink loginLink;
 
-    public Register(ViewManager vm) {
-		grid = new GridPane();
-        grid.setAlignment(Pos.CENTER);
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(25, 25, 25, 25));
-
-        Label userNameLabel = new Label("Username:");
-        grid.add(userNameLabel, 0, 0);
-
-        TextField userNameField = new TextField();
-        grid.add(userNameField, 1, 0);
-
-        Label passwordLabel = new Label("Password:");
-        grid.add(passwordLabel, 0, 1);
-
-        PasswordField passwordField = new PasswordField();
-        grid.add(passwordField, 1, 1);
-
-        Label phoneLabel = new Label("Phone Number:");
-        grid.add(phoneLabel, 0, 2);
-
-        TextField phoneField = new TextField();
-        grid.add(phoneField, 1, 2);
-
-        Label addressLabel = new Label("Address:");
-        grid.add(addressLabel, 0, 3);
-
-        TextField addressField = new TextField();
-        grid.add(addressField, 1, 3);
-
-        Label roleLabel = new Label("Roles:");
-        grid.add(roleLabel, 0, 4);
-
-        ToggleGroup roleGroup = new ToggleGroup();
-        RadioButton sellerButton = new RadioButton("Seller");
-        sellerButton.setToggleGroup(roleGroup);
-        RadioButton buyerButton = new RadioButton("Buyer");
-        buyerButton.setToggleGroup(roleGroup);
-
-        HBox roleBox = new HBox(10, sellerButton, buyerButton);
-        grid.add(roleBox, 1, 4);
-
-        Button registerButton = new Button("Register");
-        grid.add(registerButton, 1, 5);
-        
-        Hyperlink loginLink = new Hyperlink("Login Here");
-        grid.add(loginLink, 1, 6);
-
-        registerButton.setOnAction(e -> {
-            String username = userNameField.getText();
-            String password = passwordField.getText();
-            String phone = phoneField.getText();
-            String address = addressField.getText();
-            String role = sellerButton.isSelected() ? "Seller" : buyerButton.isSelected() ? "Buyer" : "None";
-            Response<User> registerResponse = UserController.getInstance().register(username, password, phone, address, role);
-            if(registerResponse.success) {
-            	Dialog successDialog = new Dialog();
-            	successDialog.showSuccessDialog(registerResponse.message);
-            	vm.showView("login");
-            }
-            else {
-            	Dialog errorDialog = new Dialog();
-                errorDialog.showErrorDialog(registerResponse.message);
-            }
-        });
-        
-        loginLink.setOnAction(e -> { 
-            if (vm.getView("login") == null) {
-                Login loginView = new Login(vm); 
-                vm.registerView("login", loginView.getView()); 
-            }
-            vm.showView("login"); 
-        });
-
+    public Register() {
+        init();
+        design();
+        setAction();
     }
 
     @Override
-    public Scene getView() {
-        return new Scene(grid, 800, 600);
+    public void init() {
+        userNameField = new TextField();
+        passwordField = new PasswordField();
+        phoneField = new TextField();
+        addressField = new TextField();
+
+        sellerButton = new RadioButton("Seller");
+        buyerButton = new RadioButton("Buyer");
+
+        roleGroup = new ToggleGroup();
+        sellerButton.setToggleGroup(roleGroup);
+        buyerButton.setToggleGroup(roleGroup);
+
+        this.add(new Label("Username:"), 0, 0);
+        this.add(new Label("Password:"), 0, 1);
+        this.add(new Label("Phone Number:"), 0, 2);
+        this.add(new Label("Address:"), 0, 3);
+        this.add(new Label("Roles:"), 0, 4);
+        
+        roleBox = new HBox(10, sellerButton, buyerButton);
+        registerButton = new Button("Register");
+        loginLink = new Hyperlink("Login Here");
     }
+
+    @Override
+    public void design() {
+    	this.add(userNameField, 1, 0);
+        this.add(passwordField, 1, 1);
+        this.add(phoneField, 1, 2);
+        this.add(addressField, 1, 3);
+        this.add(roleBox, 1, 4);
+        this.add(registerButton, 1, 5);
+        this.add(loginLink, 1, 6);
+    	
+        this.setAlignment(Pos.CENTER);
+        this.setHgap(10); 
+        this.setVgap(10); 
+        this.setPadding(new Insets(25, 25, 25, 25)); 
+
+        userNameField.setStyle("-fx-padding: 10;");
+        passwordField.setStyle("-fx-padding: 10;");
+        phoneField.setStyle("-fx-padding: 10;");
+        addressField.setStyle("-fx-padding: 10;");
+    }
+
+    public void setAction() {
+        Button registerButton = (Button) this.lookup(".button");
+        registerButton.setOnAction(e -> handleRegister());
+
+        Hyperlink loginLink = (Hyperlink) this.lookup(".hyperlink");
+        loginLink.setOnAction(e -> handleLoginLink());
+    }
+
+    private void handleLoginLink() {
+    	ViewManager.getInstance().switchTo(new Login());
+    }
+
+    private void handleRegister() {
+        String username = userNameField.getText();
+        String password = passwordField.getText();
+        String phone = phoneField.getText();
+        String address = addressField.getText();
+        String role = sellerButton.isSelected() ? "Seller" : buyerButton.isSelected() ? "Buyer" : "None";
+
+        Response<User> registerResponse = UserController.getInstance().register(username, password, phone, address, role);
+
+        if (registerResponse.success) {
+            Dialog successDialog = new Dialog();
+            successDialog.showSuccessDialog(registerResponse.message);
+            new Login();
+        } else {
+            Dialog errorDialog = new Dialog();
+            errorDialog.showErrorDialog(registerResponse.message);
+        }
+    }
+
 }

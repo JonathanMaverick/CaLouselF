@@ -4,40 +4,29 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class ViewManager {
 
-    private static ViewManager instance;  
+    private static ViewManager instance;
     private Stage stage;
-    private Map<String, Scene> views; 
 
-    private ViewManager(Stage stage) {
-        this.stage = stage;
-        this.views = new HashMap<>();
-    }
+    private ViewManager() {}
 
-    public static ViewManager getInstance(Stage stage) {
+    public static ViewManager getInstance() {
         if (instance == null) {
-            instance = new ViewManager(stage); 
+            instance = new ViewManager();
         }
         return instance;
     }
 
-    public void registerView(String name, Scene scene) {
-        views.put(name, scene);
-    }
-    
-    public Scene getView(String name) {
-        return views.get(name);
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 
-    public void showView(String name) {
-    	Scene scene = getView(name); // Get Scene
-        if (scene != null) {
-            stage.setScene(scene);
-            stage.show();
+    public void switchTo(Pane pane) {
+        if (stage != null) {
+            stage.setScene(new Scene(pane, 800, 600));
+        } else {
+            throw new IllegalStateException("Stage not initialized. Call setStage() first.");
         }
     }
 }

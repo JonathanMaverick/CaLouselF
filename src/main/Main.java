@@ -1,22 +1,20 @@
 package main;
 
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 import view.ViewManager;
 import view.auth.Login;
 
 public class Main extends Application{
 	
-	private ViewManager vm;
     public void start(Stage primaryStage) {
-
-    	vm = ViewManager.getInstance(primaryStage);
-    	if (vm.getView("login") == null) {
-            Login loginView = new Login(vm); 
-            vm.registerView("login", loginView.getView()); 
-        }
-
-        vm.showView("login");
+    	ViewManager.getInstance().setStage(primaryStage);
+    	
+        Scene loginScene = new Scene(new Login(), 800, 600);
+        primaryStage.setScene(loginScene);
+        primaryStage.setTitle("Login - CaLouselF");
+        primaryStage.show();
     }
 
     public static void main(String[] args) {

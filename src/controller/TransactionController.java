@@ -19,7 +19,7 @@ public class TransactionController {
     }
     
     private String generateNewTransactionId(){
-	    String query = "SELECT MAX(offer_id) AS max_id FROM transactions"; 
+	    String query = "SELECT MAX(transaction_id) AS max_id FROM transactions"; 
 	    try {
 	    	ResultSet rs = Connect.getInstance().execQuery(query);
 	        String maxID = "TR000";
@@ -32,7 +32,7 @@ public class TransactionController {
 	        return String.format("TR%03d", numericPart + 1);
 	    }catch (Exception e) {
 			e.printStackTrace();
-			return "Error offer id";
+			return null;
 		}
 	}
     
@@ -43,6 +43,7 @@ public class TransactionController {
 					+ "('%s', '%s', '%s')",
 					transactionId, userId, itemId);
 			Transaction insertedTransaction = new Transaction(transactionId, userId, itemId);
+			WishlistController.getInstance().removeWishlistByItemId(itemId, userId);
 			Connect.getInstance().execute(query);
 			return new Response<>(true, "Transaction's successfully inserted", insertedTransaction);
 		} catch (Exception e) {
@@ -51,21 +52,24 @@ public class TransactionController {
 		}
 	}
     
-    public Vector<Transaction> viewHistory(String userId){
+    public Response<Vector<Transaction>> viewHistory(String userId){
     	Vector<Transaction> transactionList = new Vector<>();
     	try {
-        	String query = String.format("SELECT * FROM transactions WHERE user_id ='%s'", userId);
+        	String query = String.format("SELECT * FROM transactions t JOIN"
+        			+ " items i ON i.item_id = t.item_id WHERE user_id ='%s'", userId);
 	        ResultSet rs = Connect.getInstance().execQuery(query);
 	        while (rs.next()) {
 				String itemId = rs.getString("item_id");
 				String transactionId = rs.getString("transaction_id");
-				Transaction transaction = new Transaction(transactionId, userId, itemId);
+				String name = rs.getString("name");
+				int price = rs.getInt("price");
+				Transaction transaction = new Transaction(transactionId, userId, itemId, name, price);
 				transactionList.add(transaction);
 	        }
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
-        return transactionList;
+        return new Response<Vector<Transaction>>(true, "Success", transactionList);
     }
     
     
