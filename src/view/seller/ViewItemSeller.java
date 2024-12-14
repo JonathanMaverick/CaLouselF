@@ -129,7 +129,13 @@ public class ViewItemSeller extends BorderPane implements SceneCreator {
         deleteButton.setOnAction(event -> {
             Item selectedItem = table.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
-                ItemController.getInstance().deleteItem(selectedItem.getItemId());
+                Response<Item> res = ItemController.getInstance().deleteItem(selectedItem.getItemId());
+                if(res.success) {
+                	dialog.showSuccessDialog(res.message);
+                }
+                else {
+                	dialog.showErrorDialog(res.message);
+                }
             } else {
             	dialog.showErrorDialog("You need to select the item first!");
             }

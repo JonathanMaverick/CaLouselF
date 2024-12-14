@@ -56,25 +56,33 @@ public class History extends BorderPane implements SceneCreator {
     @SuppressWarnings("unchecked")
     private void createTable() {
     	table.setPrefWidth(600);
-        TableColumn<Transaction, String> wishlistIdColumn = new TableColumn<>("Transaction ID");
-        wishlistIdColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTransactionId()));
+        TableColumn<Transaction, String> transactionIdColumn = new TableColumn<>("Transaction ID");
+        transactionIdColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTransactionId()));
     	
         TableColumn<Transaction, String> itemIdColumn = new TableColumn<>("Item ID");
         itemIdColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getItemId()));
 
         TableColumn<Transaction, String> itemNameColumn = new TableColumn<>("Item Name");
         itemNameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getItemName()));
+        
+        TableColumn<Transaction, String> categoryColumn = new TableColumn<>("Category");
+        categoryColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getItemCategory()));
 
         TableColumn<Transaction, Integer> priceColumn = new TableColumn<>("Price");
         priceColumn.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getItemPrice()).asObject());
 
-        double columnWidth = 600.0 / 4;
-        wishlistIdColumn.setPrefWidth(columnWidth);
+        TableColumn<Transaction, Integer> sizeColumn = new TableColumn<>("Size");
+        sizeColumn.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getItemSize()).asObject());
+        
+        double columnWidth = 600.0 / 6;
+        transactionIdColumn.setPrefWidth(columnWidth);
         itemIdColumn.setPrefWidth(columnWidth);
         itemNameColumn.setPrefWidth(columnWidth);
         priceColumn.setPrefWidth(columnWidth);
-
-        table.getColumns().addAll(wishlistIdColumn, itemIdColumn, itemNameColumn, priceColumn);
+        categoryColumn.setPrefWidth(columnWidth);
+        sizeColumn.setPrefWidth(columnWidth);
+        
+        table.getColumns().addAll(transactionIdColumn, itemIdColumn, itemNameColumn, priceColumn, categoryColumn, sizeColumn);
     }
 
     private void fetch() {
@@ -88,4 +96,5 @@ public class History extends BorderPane implements SceneCreator {
             dialog.showErrorDialog(response.message);
         }
     }
+    
 }

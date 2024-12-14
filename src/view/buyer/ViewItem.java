@@ -3,6 +3,7 @@ package view.buyer;
 import java.util.Vector;
 
 import controller.ItemController;
+import controller.OfferController;
 import controller.TransactionController;
 import controller.WishlistController;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -19,6 +20,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import model.Item;
+import model.Offer;
 import model.Transaction;
 import utils.Dialog;
 import utils.LoggedUser;
@@ -123,24 +125,30 @@ public class ViewItem extends BorderPane implements SceneCreator {
     
     private void showOfferPopUp(Item selectedItem) {
         TextInputDialog offerDialog = new TextInputDialog();
+        Response<Offer> res = OfferController.getInstance().getOfferByItemId(selectedItem.getItemId());
         offerDialog.setTitle("Make an Offer");
         offerDialog.setHeaderText("Enter your offer price for " + selectedItem.getName());
-        offerDialog.setContentText("Offer Price:");
+        if(res.success) {
+        	offerDialog.setContentText("Current Highest Offer Price is " + res.data.getOfferPrice() +" \nOffer Price:");        	
+        }
+        else {
+        	offerDialog.setContentText("Offer Price : ");
+        }
 
         // Show the dialog and handle the response
         offerDialog.showAndWait().ifPresent(offerPrice -> {
             try {
-//                int price = Integer.parseInt(offerPrice);
-//                if (price <= 0) {
-//                    dialog.showErrorDialog("Offer price must be greater than zero.");
-//                } else {
-//                    Response<String> response = ItemController.getInstance().makeOffer(selectedItem.getItemId(), LoggedUser.getInstance().getCurrentUser().getUserId(), price);
-//                    if (response.success) {
-//                        dialog.showSuccessDialog(response.message);
-//                    } else {
-//                        dialog.showErrorDialog(response.message);
-//                    }
-//                }
+                int price = Integer.parseInt(offerPrice);
+                if (price <= 0) {
+                    dialog.showErrorDialog("Offer price must be greater than zero.");
+                } else {
+                    Response<Offer> response = OfferController.getInstance().createOffer(selectedItem.getItemId(), LoggedUser.getInstance().getCurrentUser().getUserId(), price);
+                    if (response.success) {
+                        dialog.showSuccessDialog(response.message);
+                    } else {
+                        dialog.showErrorDialog(response.message);
+                    }
+                }
             } catch (NumberFormatException e) {
                 dialog.showErrorDialog("Invalid input. Please enter a valid number.");
             }

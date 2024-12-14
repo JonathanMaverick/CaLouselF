@@ -28,18 +28,15 @@ public class ItemController {
             
             ResultSet rs = Connect.getInstance().execQuery(query);
             while (rs.next()) {
-                String itemId = rs.getString("item_id");
+            	String itemId = rs.getString("item_id");
                 String name = rs.getString("name");
                 int size = rs.getInt("size");
                 int price = rs.getInt("price");
                 String category = rs.getString("category");
                 String status = rs.getString("status"); // Whether approved by admin or not
-                int wishlist = rs.getInt("wishlist"); // Count of people who like this product
-                String offerStatus = rs.getString("offer_status"); // Whether the item has been offered or not
-                int itemOfferPrice = rs.getInt("item_offer_price"); // Latest offer price
                 String sellerId = rs.getString("seller_id");
                 String reason = rs.getString("reason");
-                Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId, reason);
+                Item item = new Item(itemId, name, size, price, category, status, sellerId, reason);
                 itemList.add(item);
             }
         } catch (Exception e) {
@@ -58,18 +55,15 @@ public class ItemController {
             
             ResultSet rs = Connect.getInstance().execQuery(query);
             while (rs.next()) {
-                String itemId = rs.getString("item_id");
+            	String itemId = rs.getString("item_id");
                 String name = rs.getString("name");
                 int size = rs.getInt("size");
                 int price = rs.getInt("price");
                 String category = rs.getString("category");
                 String status = rs.getString("status"); // Whether approved by admin or not
-                int wishlist = rs.getInt("wishlist"); // Count of people who like this product
-                String offerStatus = rs.getString("offer_status"); // Whether the item has been offered or not
-                int itemOfferPrice = rs.getInt("item_offer_price"); // Latest offer price
                 String sellerId = rs.getString("seller_id");
                 String reason = rs.getString("reason");
-                Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId, reason);
+                Item item = new Item(itemId, name, size, price, category, status, sellerId, reason);
                 itemList.add(item);
             }
         } catch (Exception e) {
@@ -84,7 +78,7 @@ public class ItemController {
     // Get item by itemId
     public Item getItem(String itemId) {
         try {
-            String query = String.format("SELECT * FROM ITEMS WHERE status LIKE 'Pending'");
+            String query = String.format("SELECT * FROM ITEMS WHERE item_id = '%s' LIMIT 1", itemId);
             ResultSet rs = Connect.getInstance().execQuery(query);
             while (rs.next()) {
                 String name = rs.getString("name");
@@ -92,12 +86,9 @@ public class ItemController {
                 int price = rs.getInt("price");
                 String category = rs.getString("category");
                 String status = rs.getString("status"); // Whether approved by admin or not
-                int wishlist = rs.getInt("wishlist"); // Count of people who like this product
-                String offerStatus = rs.getString("offer_status"); // Whether the item has been offered or not
-                int itemOfferPrice = rs.getInt("item_offer_price"); // Latest offer price
                 String sellerId = rs.getString("seller_id");
                 String reason = rs.getString("reason");
-                Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId, reason);
+                Item item = new Item(itemId, name, size, price, category, status, sellerId, reason);
                 return item;
             }
         } catch (Exception e) {
@@ -199,18 +190,15 @@ public class ItemController {
             ResultSet rs = Connect.getInstance().execQuery(query);
 
             while (rs.next()) {
-                String itemId = rs.getString("item_id");
+            	String itemId = rs.getString("item_id");
                 String name = rs.getString("name");
                 int size = rs.getInt("size");
                 int price = rs.getInt("price");
                 String category = rs.getString("category");
                 String status = rs.getString("status"); // Whether approved by admin or not
-                int wishlist = rs.getInt("wishlist"); // Count of people who like this product
-                String offerStatus = rs.getString("offer_status"); // Whether the item has been offered or not
-                int itemOfferPrice = rs.getInt("item_offer_price"); // Latest offer price
                 String sellerId = rs.getString("seller_id");
                 String reason = rs.getString("reason");
-                Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId, reason);
+                Item item = new Item(itemId, name, size, price, category, status, sellerId, reason);
                 items.add(item);
             }
         } catch (Exception e) {
@@ -285,18 +273,15 @@ public class ItemController {
             
             ResultSet rs = Connect.getInstance().execQuery(query);
             while (rs.next()) {
-                String itemId = rs.getString("item_id");
+            	String itemId = rs.getString("item_id");
                 String name = rs.getString("name");
                 int size = rs.getInt("size");
                 int price = rs.getInt("price");
                 String category = rs.getString("category");
                 String status = rs.getString("status"); // Whether approved by admin or not
-                int wishlist = rs.getInt("wishlist"); // Count of people who like this product
-                String offerStatus = rs.getString("offer_status"); // Whether the item has been offered or not
-                int itemOfferPrice = rs.getInt("item_offer_price"); // Latest offer price
-                String reason = rs.getString("reason");
                 String sellerId = rs.getString("seller_id");
-                Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId, reason);
+                String reason = rs.getString("reason");
+                Item item = new Item(itemId, name, size, price, category, status, sellerId, reason);
                 itemList.add(item);
             }
         } catch (Exception e) {
@@ -313,17 +298,14 @@ public class ItemController {
             
             ResultSet rs = Connect.getInstance().execQuery(query);
             while (rs.next()) {
-                String itemId = rs.getString("item_id");
+            	String itemId = rs.getString("item_id");
                 String name = rs.getString("name");
                 int size = rs.getInt("size");
                 int price = rs.getInt("price");
                 String category = rs.getString("category");
                 String status = rs.getString("status"); // Whether approved by admin or not
-                int wishlist = rs.getInt("wishlist"); // Count of people who like this product
-                String offerStatus = rs.getString("offer_status"); // Whether the item has been offered or not
-                int itemOfferPrice = rs.getInt("item_offer_price"); // Latest offer price
                 String reason = rs.getString("reason");
-                Item item = new Item(itemId, name, size, price, category, status, wishlist, offerStatus, itemOfferPrice, sellerId, reason);
+                Item item = new Item(itemId, name, size, price, category, status, sellerId, reason);
                 itemList.add(item);
             }
         } catch (Exception e) {

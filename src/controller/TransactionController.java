@@ -63,7 +63,9 @@ public class TransactionController {
 				String transactionId = rs.getString("transaction_id");
 				String name = rs.getString("name");
 				int price = rs.getInt("price");
-				Transaction transaction = new Transaction(transactionId, userId, itemId, name, price);
+				String category = rs.getString("category");
+				int size =rs.getInt("size");
+				Transaction transaction = new Transaction(transactionId, userId, itemId, name, price, category, size);
 				transactionList.add(transaction);
 	        }
 	    } catch (Exception e) {

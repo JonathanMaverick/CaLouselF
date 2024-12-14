@@ -8,9 +8,6 @@ public class Item {
 	private int price;
 	private String category;
 	private String status;
-	private int wishlist;
-	private String offerStatus;
-	private int itemOfferPrice;
 	private String sellerId;
 	private String reason;
 	
@@ -24,8 +21,8 @@ public class Item {
 		this.setSellerId(sellerId);
 	}
 	
-	public Item(String itemId, String name, int size, int price, String category, String status, int wishlist,
-			String offerStatus, int itemOfferPrice, String sellerId, String reason) {
+	public Item(String itemId, String name, int size, int price, String category, String status,
+			String sellerId, String reason) {
 		super();
 		this.itemId = itemId;
 		this.name = name;
@@ -33,9 +30,6 @@ public class Item {
 		this.price = price;
 		this.category = category;
 		this.status = status;
-		this.wishlist = wishlist;
-		this.offerStatus = offerStatus;
-		this.itemOfferPrice = itemOfferPrice;
 		this.reason = reason;
 		this.setSellerId(sellerId);
 	}
@@ -84,25 +78,7 @@ public class Item {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public int getWishlist() {
-		return wishlist;
-	}
-	public void setWishlist(int wishlist) {
-		this.wishlist = wishlist;
-	}
-	public String getOfferStatus() {
-		return offerStatus;
-	}
-	public void setOfferStatus(String offerStatus) {
-		this.offerStatus = offerStatus;
-	}
-	public int getItemOfferPrice() {
-		return itemOfferPrice;
-	}
-	public void setItemOfferPrice(int itemOfferPrice) {
-		this.itemOfferPrice = itemOfferPrice;
-	}
-
+	
 	public String getSellerId() {
 		return sellerId;
 	}

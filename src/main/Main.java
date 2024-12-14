@@ -13,7 +13,7 @@ public class Main extends Application{
     	
         Scene loginScene = new Scene(new Login(), 800, 600);
         primaryStage.setScene(loginScene);
-        primaryStage.setTitle("Login - CaLouselF");
+        primaryStage.setTitle("CaLouselF");
         primaryStage.show();
     }
 

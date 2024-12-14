@@ -6,6 +6,8 @@ public class Transaction {
 	private String itemId;
 	private String itemName;
 	private int itemPrice;
+	private String itemCategory;
+	private int itemSize;
 	
 	public String getItemName() {
 		return itemName;
@@ -23,13 +25,31 @@ public class Transaction {
 		this.itemPrice = itemPrice;
 	}
 
-	public Transaction(String transactionId, String userId, String itemId, String itemName, int itemPrice) {
+	public Transaction(String transactionId, String userId, String itemId, String itemName, int itemPrice, String itemCategory, int itemSize) {
 		super();
 		this.transactionId = transactionId;
 		this.userId = userId;
 		this.itemId = itemId;
 		this.itemName = itemName;
 		this.itemPrice = itemPrice;
+		this.itemCategory = itemCategory;
+		this.itemSize = itemSize;
+	}
+
+	public String getItemCategory() {
+		return itemCategory;
+	}
+
+	public void setItemCategory(String itemCategory) {
+		this.itemCategory = itemCategory;
+	}
+
+	public int getItemSize() {
+		return itemSize;
+	}
+
+	public void setItemSize(int itemSize) {
+		this.itemSize = itemSize;
 	}
 
 	public Transaction(String transactionId, String userId, String itemId) {

@@ -23,7 +23,7 @@ public class OfferController {
     // Retrieves an offer by its ID from the database
     private Offer getOffer(String offerId) {
         try {
-            String query = String.format("SELECT * FROM Offers WHERE offer_id LIKE '%s%'", offerId);
+            String query = String.format("SELECT * FROM Offers WHERE offer_id LIKE '%s'", offerId);
             ResultSet rs = Connect.getInstance().execQuery(query);
             while (rs.next()) {
                 String itemId = rs.getString("item_id");
@@ -63,19 +63,29 @@ public class OfferController {
     private Response<Offer> checkOfferValidation(String itemId, String userId, int price) {
         ItemController IC = new ItemController();
         Item item = IC.getItem(itemId);
-        
         if(itemId.isEmpty() || userId.isEmpty()) {
             return new Response<>(false, "Item ID or User ID is empty", null);
         }
         else if(item.getPrice() <= price) {
             return new Response<>(false, "Offer price can't be bigger than current price", null);
         }
-        else if ("Offered".equals(item.getOfferStatus())) {
-            if(item.getItemOfferPrice() >= price) {
-                return new Response<>(false, "Offer price can't be higher than current offer price", null);
+        Response<Offer> res = getOfferByItemId(itemId);
+        if (res.success) {
+            if(res.data.getOfferPrice() >= price) {
+                return new Response<>(false, "Offer price can't be lower than current offer price", null);
             }
+            deleteOffer(res.data.getOfferId());
         }
-        return new Response<>(true, "Validation valid", null);
+        return new Response<>(true, "Validation valid", null);        
+    }
+    
+    private void deleteOffer(String offerId) {
+    	 try {
+             String query = String.format("DELETE FROM offers WHERE offer_id = '%s'", offerId);
+             Connect.getInstance().execute(query);
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
     }
 
     //createOffer
@@ -85,9 +95,9 @@ public class OfferController {
         if(response.success) {
             try {
                 String offerId = generateNewOfferId();
-                String query = String.format("INSERT INTO OFFERS VALUES "
-                        + "('%s', '%s', '%s', '%d')",
-                        offerId, itemId, userId, offerPrice);
+                String query = String.format("INSERT INTO offers VALUES "
+                        + "('%s', '%s', '%s', '%d', '%s', '%s')",
+                        offerId, itemId, userId, offerPrice, "", "Pending");
                 Offer insertedOffer = new Offer(itemId, offerId, userId, offerPrice);
                 Connect.getInstance().execute(query);
                 return new Response<>(true, "Offer's successfully inserted", insertedOffer);
@@ -106,14 +116,9 @@ public class OfferController {
     public Response<Offer> acceptOffer(String offerId) {
         Offer acceptedOffer = getOffer(offerId);
         try {
-             String query = String.format("UPDATE ITEMS SET " +
-                    "offer_status = '%s', " +
-                    "item_offer_price = '%d', " +
-                    "WHERE id = '%s'",
-                    "Accepted", acceptedOffer.offerPrice, acceptedOffer.itemId);
-             
-            Connect.getInstance().execute(query);
-            return new Response<>(true, "Offer Accepted", acceptedOffer);
+        	TransactionController.getInstance().createTransaction(acceptedOffer.getUserId(), acceptedOffer.getItemId());
+        	deleteOffer(offerId);
+        	return new Response<>(true, "Offer Accepted", acceptedOffer);
         } catch (Exception e) {
             e.printStackTrace();
             return new Response<>(false, "Error occurred", null);
@@ -122,13 +127,13 @@ public class OfferController {
 
     // declineOffer
     // Declines an offer by its ID and deletes it from the database
-    public Response<Offer> declineOffer(String offerId) {
+    public Response<Offer> declineOffer(String offerId, String reason) {
         try {
             Offer deletedOffer = getOffer(offerId);
-            String query = String.format("DELETE FROM OFFERS WHERE offer_id = '%s'", offerId);
-            
+            String query = String.format("UPDATE OFFERS SET offer_status = 'Decline', offer_reason = '%s'"
+            		+ " WHERE offer_id = '%s'", reason, offerId);
+            System.out.println(query);
             Connect.getInstance().execute(query);
-        
             return new Response<>(true, "Offer declined", deletedOffer);
         } catch (Exception e) {
             e.printStackTrace();
@@ -138,21 +143,80 @@ public class OfferController {
 
     // getOfferByItemId
     // Retrieves all offers associated with a specific item ID
-    public Vector<Offer> getOfferByItemId(String itemId) {
-        Vector<Offer> offerList = new Vector<>();
+    public Response<Offer> getOfferByItemId(String itemId) {
+    	Offer offer = null;
         try {
-            String query = String.format("SELECT * FROM Offers WHERE item_id = '%s'", itemId);
+            String query = String.format("SELECT * FROM Offers WHERE item_id = '%s' AND offer_status = 'Pending'"
+            		+ " ORDER BY offer_price DESC LIMIT 1", itemId);
             ResultSet rs = Connect.getInstance().execQuery(query);
             while (rs.next()) {
                 String offerId = rs.getString("offer_id");
                 String userId = rs.getString("user_id");
                 int offerPrice = rs.getInt("offer_price");
-                Offer offer = new Offer(offerId, itemId, userId, offerPrice);
-                offerList.add(offer);
+                offer = new Offer(itemId, offerId, userId, offerPrice);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return new Response<Offer>(false, e.toString(), null);
         }
-        return offerList;
+        if(offer == null) {
+        	return new Response<Offer>(false, "", null);
+        }
+        return new Response<Offer>(true, "", offer);
+    }
+    
+    public Response<Vector<Offer>> getOfferBySellerId(String sellerId){
+    	Vector<Offer> offerList = new Vector<Offer>();
+    	try {
+    		String query = String.format("SELECT * FROM Offers o JOIN items i ON i.item_id = o.item_id WHERE i.seller_id = '%s' AND o.offer_status = 'Pending'", sellerId);
+    		 ResultSet rs = Connect.getInstance().execQuery(query);
+    		 while (rs.next()) {
+                 String offerId = rs.getString("offer_id");
+                 String itemId = rs.getString("item_id");
+                 String userId = rs.getString("user_id");
+                 int offerPrice = rs.getInt("offer_price");
+                 String reason = rs.getString("offer_reason");
+                 String name = rs.getString("name");
+                 int size = rs.getInt("size");
+                 int price = rs.getInt("price");
+                 String category = rs.getString("category");
+                 String status = rs.getString("offer_status");
+                 Offer offer = new Offer(itemId, offerId, userId, offerPrice, name, category, price, size, reason, status);
+                 offerList.add(offer);
+             }
+    	}catch (Exception e) {
+            e.printStackTrace();
+            return new Response<Vector<Offer>>(false, e.toString(), null);
+        }
+    	
+    	return new Response<Vector<Offer>>(true, "Success", offerList);
+    }
+    
+    //GetOfferHistoryBySellerID
+    public Response<Vector<Offer>> getOfferHistoryBySellerId(String sellerId){
+    	Vector<Offer> offerList = new Vector<Offer>();
+    	try {
+    		String query = String.format("SELECT * FROM Offers o JOIN items i ON i.item_id = o.item_id WHERE i.seller_id = '%s' AND o.offer_status = 'Decline'", sellerId);
+    		 ResultSet rs = Connect.getInstance().execQuery(query);
+    		 while (rs.next()) {
+                 String offerId = rs.getString("offer_id");
+                 String itemId = rs.getString("item_id");
+                 String userId = rs.getString("user_id");
+                 int offerPrice = rs.getInt("offer_price");
+                 String reason = rs.getString("offer_reason");
+                 String name = rs.getString("name");
+                 int size = rs.getInt("size");
+                 int price = rs.getInt("price");
+                 String category = rs.getString("category");
+                 String status = rs.getString("offer_status");
+                 Offer offer = new Offer(itemId, offerId, userId, offerPrice, name, category, price, size, reason, status);
+                 offerList.add(offer);
+             }
+    	}catch (Exception e) {
+            e.printStackTrace();
+            return new Response<Vector<Offer>>(false, e.toString(), null);
+        }
+    	
+    	return new Response<Vector<Offer>>(true, "Success", offerList);
     }
 }

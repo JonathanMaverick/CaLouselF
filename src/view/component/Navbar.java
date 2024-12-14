@@ -13,6 +13,8 @@ import view.buyer.History;
 import view.buyer.ViewItem;
 import view.buyer.WishlistView;
 import view.seller.AddItem;
+import view.seller.OfferHistory;
+import view.seller.OfferView;
 import view.seller.ViewItemSeller;
 
 public class Navbar extends MenuBar {
@@ -62,25 +64,29 @@ public class Navbar extends MenuBar {
 
     private void initSellerMenu() {
         Menu itemMenu = new Menu("Item");
-        MenuItem viewOfferedItem = new MenuItem("View Offered Item");
+        Menu offerMenu = new Menu("Offer");
+        
         MenuItem addItem = new MenuItem("Add Item");
         MenuItem viewItemBySeller = new MenuItem("View Item");
 
+        MenuItem viewOfferedItem = new MenuItem("View Offered Item");
+        MenuItem offerHistory = new MenuItem("Offer History");
+
         addItem.setOnAction(e -> showAddItemView());
         viewItemBySeller.setOnAction(e -> viewItemSeller());
-
-        itemMenu.getItems().addAll(viewOfferedItem, addItem, viewItemBySeller);
-        this.getMenus().add(itemMenu);
+        viewOfferedItem.setOnAction(e -> offerView());
+        offerHistory.setOnAction(e -> offerHistory());
+        
+        offerMenu.getItems().addAll(viewOfferedItem, offerHistory);
+        itemMenu.getItems().addAll(addItem, viewItemBySeller);
+        this.getMenus().addAll(itemMenu, offerMenu);
     }
     
     private void initBuyerMenu() {
         Menu wishlistMenu = new Menu("Wishlist");
         Menu historyMenu = new Menu("History");
-        Menu offerMenu = new Menu("Offer");
         Menu itemMenu = new Menu("Item");
 
-        MenuItem approvedOffer = new MenuItem("Approved Offer");
-        MenuItem allOffer = new MenuItem("All Offer");
         MenuItem item = new MenuItem("View Menu");
         
         MenuItem wishlist = new MenuItem("View Wishlist");
@@ -93,8 +99,7 @@ public class Navbar extends MenuBar {
         wishlistMenu.getItems().addAll(wishlist);
         historyMenu.getItems().addAll(history);
         itemMenu.getItems().addAll(item);
-        offerMenu.getItems().addAll(approvedOffer, allOffer);
-        this.getMenus().addAll(itemMenu, wishlistMenu, historyMenu, offerMenu);
+        this.getMenus().addAll(itemMenu, wishlistMenu, historyMenu);
     }
 
     private void showAddItemView() {
@@ -127,6 +132,14 @@ public class Navbar extends MenuBar {
     
     private void viewWishlist() {
     	ViewManager.getInstance().switchTo(new WishlistView());
+    }
+    
+    private void offerView() {
+    	ViewManager.getInstance().switchTo(new OfferView());
+    }
+    
+    private void offerHistory() {
+    	ViewManager.getInstance().switchTo(new OfferHistory());
     }
     
     private void logOut() {
